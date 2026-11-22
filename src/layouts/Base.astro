@@ -19,6 +19,13 @@ const ogImage = new URL('/og.png', Astro.site);
 <!doctype html>
 <html lang="en">
   <head>
+    <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-TM7QNK6HCP"></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-TM7QNK6HCP');
+    </script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
