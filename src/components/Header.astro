@@ -1,0 +1,306 @@
+---
+import { nav, site } from '../data/content';
+
+interface Props {
+  home?: boolean;
+}
+const { home = true } = Astro.props;
+const prefix = home ? '' : '/';
+---
+
+<header class="site-header" data-header>
+  <div class="wrap bar">
+    <a href={home ? '#top' : '/'} class="brand">{site.name}</a>
+
+    <nav aria-label="Main" class="nav-desktop">
+      <ul>
+        {
+          nav.map((item) => (
+            <li>
+              <a href={`${prefix}${item.href}`} data-nav={item.href.slice(1)}>
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="tools">
+      <button type="button" class="tool theme-toggle" data-theme-toggle aria-label="Switch to dark theme">
+        <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+          <circle cx="7" cy="7" r="6" fill="none" stroke="currentColor" stroke-width="1.25"></circle>
+          <path d="M7 1a6 6 0 0 1 0 12z" fill="currentColor"></path>
+        </svg>
+        <span data-theme-label>Dark</span>
+      </button>
+      <button type="button" class="tool menu-btn" data-menu-open aria-haspopup="dialog" aria-controls="menu">
+        Menu
+      </button>
+    </div>
+  </div>
+</header>
+
+<dialog id="menu" class="menu" aria-label="Menu" data-menu>
+  <div class="wrap menu-bar">
+    <span class="brand" aria-hidden="true">{site.name}</span>
+    <button type="button" class="tool" data-menu-close>Close</button>
+  </div>
+  <nav aria-label="Main (mobile)" class="wrap">
+    <ol class="menu-list">
+      {
+        nav.map((item, i) => (
+          <li>
+            <a href={`${prefix}${item.href}`} data-menu-link>
+              <span class="menu-num" aria-hidden="true">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              {item.label}
+            </a>
+          </li>
+        ))
+      }
+    </ol>
+  </nav>
+  <p class="wrap menu-foot meta">
+    <a class="link" href={`mailto:${site.email}`}>{site.email}</a>
+  </p>
+</dialog>
+
+<script>
+  const root = document.documentElement;
+  const header = document.querySelector<HTMLElement>('[data-header]')!;
+
+  // Theme toggle: remembers an explicit choice, otherwise follows the system.
+  const toggle = document.querySelector<HTMLButtonElement>('[data-theme-toggle]')!;
+  const systemDark = matchMedia('(prefers-color-scheme: dark)');
+  const isDark = () => (root.dataset.theme ? root.dataset.theme === 'dark' : systemDark.matches);
+  const label = toggle.querySelector('[data-theme-label]')!;
+  // The button names the theme it switches to.
+  const sync = () => {
+    const target = isDark() ? 'light' : 'dark';
+    label.textContent = target === 'dark' ? 'Dark' : 'Light';
+    toggle.setAttribute('aria-label', `Switch to ${target} theme`);
+    toggle.dataset.current = isDark() ? 'dark' : 'light';
+  };
+  sync();
+  systemDark.addEventListener('change', sync);
+  toggle.addEventListener('click', () => {
+    const next = isDark() ? 'light' : 'dark';
+    root.dataset.theme = next;
+    try {
+      localStorage.setItem('theme', next);
+    } catch {}
+    sync();
+  });
+
+  // Hairline under the header once the page has scrolled.
+  const onScroll = () => header.classList.toggle('is-scrolled', scrollY > 8);
+  onScroll();
+  addEventListener('scroll', onScroll, { passive: true });
+
+  // Mobile menu: native <dialog> gives focus trapping and Esc to close.
+  const menu = document.querySelector<HTMLDialogElement>('[data-menu]')!;
+  const openBtn = document.querySelector<HTMLButtonElement>('[data-menu-open]')!;
+  openBtn.addEventListener('click', () => {
+    menu.showModal();
+    root.classList.add('menu-open');
+  });
+  menu.addEventListener('close', () => {
+    root.classList.remove('menu-open');
+    openBtn.focus();
+  });
+  menu.querySelector('[data-menu-close]')!.addEventListener('click', () => menu.close());
+  menu.querySelectorAll('[data-menu-link]').forEach((a) => a.addEventListener('click', () => menu.close()));
+
+  // Mark the section currently in view.
+  const links = document.querySelectorAll<HTMLAnchorElement>('[data-nav]');
+  const sections = [...links]
+    .map((a) => document.getElementById(a.dataset.nav!))
+    .filter((s): s is HTMLElement => !!s);
+  if (sections.length) {
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (!e.isIntersecting) continue;
+          links.forEach((a) => {
+            if (a.dataset.nav === e.target.id) a.setAttribute('aria-current', 'location');
+            else a.removeAttribute('aria-current');
+          });
+        }
+      },
+      { rootMargin: '-45% 0px -50% 0px' },
+    );
+    sections.forEach((s) => io.observe(s));
+  }
+</script>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--bg);
+    border-bottom: 1px solid transparent;
+    transition: border-color 200ms var(--ease-out);
+  }
+  .site-header.is-scrolled {
+    border-bottom-color: var(--border);
+  }
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    height: var(--header-h);
+  }
+  .brand {
+    font-weight: 500;
+    font-size: var(--step--1);
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+  }
+
+  .nav-desktop {
+    display: none;
+    margin-left: auto;
+  }
+  .nav-desktop ul {
+    display: flex;
+    gap: var(--space-5);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .nav-desktop a {
+    position: relative;
+    font-size: var(--step--1);
+    color: var(--muted);
+    padding-block: var(--space-2);
+    transition: color 200ms var(--ease-out);
+  }
+  .nav-desktop a:hover,
+  .nav-desktop a[aria-current] {
+    color: var(--text);
+  }
+  /* The dot under the current section: the site's data-point motif. */
+  .nav-desktop a::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -2px;
+    width: 5px;
+    height: 5px;
+    margin-left: -2.5px;
+    border-radius: 50%;
+    background: var(--accent);
+    opacity: 0;
+    transition: opacity 200ms var(--ease-out);
+  }
+  .nav-desktop a[aria-current]::after {
+    opacity: 1;
+  }
+
+  .tools {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+  .tool {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    min-height: 2.75rem;
+    padding: 0 var(--space-1);
+    font: inherit;
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: none;
+    border: 0;
+    cursor: pointer;
+    transition: color 200ms var(--ease-out);
+  }
+  .tool:hover {
+    color: var(--text);
+  }
+  .theme-toggle[data-current='dark'] svg {
+    transform: rotate(180deg);
+  }
+
+  @media (min-width: 56rem) {
+    .nav-desktop {
+      display: block;
+    }
+    .menu-btn {
+      display: none;
+    }
+    .tools {
+      margin-left: var(--space-5);
+      padding-left: var(--space-5);
+      border-left: 1px solid var(--border);
+      height: 1.25rem;
+    }
+  }
+
+  /* Full-screen mobile menu */
+  .menu {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: var(--bg);
+    color: var(--text);
+  }
+  .menu[open] {
+    display: flex;
+    flex-direction: column;
+  }
+  .menu::backdrop {
+    background: var(--bg);
+  }
+  .menu-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: var(--header-h);
+    border-bottom: 1px solid var(--border);
+  }
+  .menu-list {
+    list-style: none;
+    margin: var(--space-6) 0 0;
+    padding: 0;
+  }
+  .menu-list li {
+    border-bottom: 1px solid var(--border);
+  }
+  .menu-list a {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-4);
+    padding-block: var(--space-3);
+    font-family: var(--font-display);
+    font-size: var(--step-4);
+    line-height: 1.15;
+  }
+  .menu-num {
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    color: var(--muted);
+    min-width: 2ch;
+  }
+  .menu-foot {
+    margin-top: auto;
+    padding-block: var(--space-5);
+  }
+  :global(html.menu-open) {
+    overflow: hidden;
+  }
+</style>

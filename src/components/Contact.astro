@@ -1,0 +1,74 @@
+---
+import { site } from '../data/content';
+---
+
+<section id="contact" class="section contact" aria-labelledby="contact-title">
+  <div class="wrap grid-12">
+    <p class="label margin"><span class="num">§&nbsp;05</span>Contact</p>
+    <div class="body" data-reveal>
+      <h2 id="contact-title">Let’s talk.</h2>
+      <p class="email">
+        <a class="link" href={`mailto:${site.email}`}>{site.email}</a>
+      </p>
+      <p class="meta other">
+        <a class="link ext" href={site.linkedin} target="_blank" rel="noopener noreferrer">
+          LinkedIn<span class="sr-only"> (opens in a new tab)</span>
+        </a>
+      </p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .margin {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: var(--space-3);
+    margin: 0 0 var(--space-3);
+  }
+  .num {
+    color: var(--text);
+  }
+  .body {
+    grid-column: 1 / -1;
+  }
+  h2 {
+    margin: 0;
+    font-size: var(--step-6);
+    line-height: 0.95;
+    letter-spacing: -0.025em;
+    font-weight: 380;
+  }
+  .email {
+    margin: var(--space-5) 0 0;
+    font-family: var(--font-display);
+    font-size: var(--step-3);
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+  }
+  .email a {
+    text-decoration-thickness: 1.5px;
+    text-decoration-color: var(--text);
+  }
+  .email a:hover {
+    text-decoration-color: var(--accent);
+  }
+  .other {
+    margin: var(--space-4) 0 0;
+  }
+  .other a {
+    display: inline-block;
+    padding-block: var(--space-1);
+  }
+  @media (min-width: 64rem) {
+    .margin {
+      grid-column: 1 / span 3;
+      flex-direction: column;
+      gap: var(--space-1);
+      padding-top: 1.4em;
+    }
+    .body {
+      grid-column: 4 / -1;
+    }
+  }
+</style>

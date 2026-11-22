@@ -1,0 +1,264 @@
+---
+import type { Project } from '../data/content';
+import { statusLabel } from '../data/content';
+
+interface Props {
+  project: Project;
+  index: number;
+}
+const { project: p, index } = Astro.props;
+const num = String(index + 1).padStart(2, '0');
+const showBadge = p.status === 'upcoming' || p.status === 'concept' || p.status === 'prototype';
+---
+
+<article class="row grid-12" aria-labelledby={`p-${p.slug}`} data-reveal>
+  <div class="when">
+    <span class="num">{num}</span>
+    {p.years && <span>{p.years}</span>}
+    {
+      showBadge && (
+        <span class:list={['badge', { 'badge--accent': p.status === 'upcoming' }]}>
+          {statusLabel[p.status]}
+          {p.statusNote && <> · {p.statusNote}</>}
+        </span>
+      )
+    }
+  </div>
+
+  <div class="main">
+    <h3 id={`p-${p.slug}`}>
+      <a href={`/projects/${p.slug}`} class="row-link">
+        <span class="title">{p.title}</span>
+      </a>
+    </h3>
+    <p class="summary">{p.summary}</p>
+    <p class="for meta"><span class="for-k">For</span> {p.audience}</p>
+    {
+      p.facts.length > 0 && (
+        <ul class="facts" aria-label="Key numbers">
+          {p.facts.map((f) => (
+            <li>
+              <span class="fact-v">{f.value}</span>
+              <span class="fact-l">{f.label}</span>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </div>
+
+  <div class="side">
+    <p class="role">{p.role}</p>
+    {
+      p.links.length > 0 && (
+        <ul class="links">
+          {p.links.map((l) => (
+            <li>
+              <a class="link ext" href={l.href} target="_blank" rel="noopener noreferrer">
+                {l.kind === 'website' ? 'Website' : l.label}
+                <span class="sr-only"> (opens in a new tab)</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </div>
+
+  <span class="arrow" aria-hidden="true">→</span>
+</article>
+
+<style>
+  .row {
+    position: relative;
+    row-gap: var(--space-3);
+    padding-block: var(--space-5);
+    border-top: 1px solid var(--border);
+  }
+  .row::before {
+    /* the single data point that marks the row you are on */
+    content: '';
+    position: absolute;
+    left: calc(-1 * min(var(--space-4), var(--gutter) - 6px));
+    top: calc(var(--space-5) + 0.85em);
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+    opacity: 0;
+    transition: opacity 200ms var(--ease-out);
+  }
+  .when {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-3);
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+  .num {
+    color: var(--text);
+  }
+  .main,
+  .side {
+    grid-column: 1 / -1;
+  }
+  h3 {
+    margin: 0;
+    font-size: var(--step-3);
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    padding-right: var(--space-6);
+  }
+  .title {
+    background-image: linear-gradient(var(--accent), var(--accent));
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 0% 1px;
+    transition: background-size 250ms var(--ease-out), color 200ms var(--ease-out);
+  }
+  .row-link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+  .row-link:focus-visible {
+    outline: none;
+  }
+  .row:has(.row-link:focus-visible) {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+  }
+  .summary {
+    margin: var(--space-2) 0 0;
+    font-size: var(--step-0);
+    max-width: 52ch;
+  }
+  .for {
+    margin: var(--space-2) 0 0;
+    font-size: var(--step--2);
+  }
+  .for-k {
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-right: 0.5em;
+  }
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-3);
+    list-style: none;
+    margin: var(--space-4) 0 0;
+    padding: 0;
+  }
+  .facts li {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding-top: var(--space-2);
+    border-top: 1px solid var(--text);
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+  .fact-v {
+    font-size: var(--step-0);
+    font-weight: 500;
+    line-height: 1.2;
+  }
+  .fact-l {
+    font-size: var(--step--2);
+    color: var(--muted);
+    line-height: 1.35;
+  }
+  .role {
+    margin: 0;
+    font-size: var(--step--1);
+    color: var(--muted);
+    line-height: 1.45;
+  }
+  .links {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-4);
+    list-style: none;
+    margin: var(--space-2) 0 0;
+    padding: 0;
+    font-size: var(--step--1);
+  }
+  .links a {
+    display: inline-block;
+    padding-block: var(--space-1);
+  }
+  .arrow {
+    position: absolute;
+    right: 0;
+    top: var(--space-5);
+    font-family: var(--font-mono);
+    font-size: var(--step-2);
+    line-height: 1;
+    color: var(--muted);
+    transition: translate 200ms var(--ease-out), color 200ms var(--ease-out);
+  }
+
+  .row:hover .title,
+  .row:has(.row-link:focus-visible) .title {
+    background-size: 100% 1px;
+  }
+  .row:hover .arrow,
+  .row:has(.row-link:focus-visible) .arrow {
+    translate: 4px 0;
+    color: var(--accent);
+  }
+  .row:hover::before {
+    opacity: 1;
+  }
+
+  @media (min-width: 64rem) {
+    .when {
+      grid-column: 1 / span 3;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--space-2);
+      padding-top: 0.55em;
+    }
+    .main {
+      grid-column: 4 / span 6;
+    }
+    .side {
+      grid-column: 10 / span 3;
+      padding-top: 0.55em;
+      padding-right: var(--space-6);
+    }
+    .arrow {
+      top: calc(var(--space-5) + 0.2em);
+    }
+    .facts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-3) var(--space-5);
+    }
+    .facts li {
+      min-width: 7rem;
+      max-width: 14rem;
+    }
+    .fact-v {
+      font-size: var(--step-1);
+    }
+    h3 {
+      padding-right: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .title,
+    .arrow,
+    .row::before {
+      transition: none;
+    }
+  }
+</style>

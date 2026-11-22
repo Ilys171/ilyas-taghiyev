@@ -1,0 +1,40 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import SectionHead from '../components/SectionHead.astro';
+import ProjectRow from '../components/ProjectRow.astro';
+import Research from '../components/Research.astro';
+import Recognition from '../components/Recognition.astro';
+import About from '../components/About.astro';
+import Contact from '../components/Contact.astro';
+import { projects } from '../data/content';
+---
+
+<Base>
+  <Hero />
+
+  <section id="projects" class="section" aria-labelledby="projects-title">
+    <div class="wrap">
+      <SectionHead num="01" label="Projects" title="Projects for children and young people" id="projects">
+        <p>
+          {projects.length} projects, ordered from the ones that work most directly with children and young people.
+          Each has its own page with the details.
+        </p>
+      </SectionHead>
+      <div class="list">
+        {projects.map((project, index) => <ProjectRow project={project} index={index} />)}
+      </div>
+    </div>
+  </section>
+
+  <Research />
+  <Recognition />
+  <About />
+  <Contact />
+</Base>
+
+<style>
+  .list {
+    border-bottom: 1px solid var(--border);
+  }
+</style>

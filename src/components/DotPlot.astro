@@ -1,0 +1,172 @@
+---
+import { makeDotPlot } from '../lib/dots';
+
+const { dots, meanY, hiddenLeft, hiddenMidY } = makeDotPlot();
+const hiddenCount = dots.filter((d) => d.hidden).length;
+const label = `Illustrative dot plot of ${dots.length} synthetic data points. Most sit close to a horizontal line marking the average; ${hiddenCount} sit far below it and are highlighted.`;
+---
+
+<figure class="plot" data-dotplot>
+  {/* HTML dots (not SVG) so the spread animation runs on the compositor. */}
+  <div class="area" role="img" aria-label={label}>
+    <span class="mean" style={`top:${meanY}%`}></span>
+    <span class="mean-label" style={`top:${meanY}%`}>average</span>
+    {
+      dots.map((d) => (
+        <span
+          class:list={['dot', { 'dot--hidden': d.hidden, 'dot--extra': !d.core }]}
+          style={`left:${d.x}%;top:${d.y}%;--c:${(meanY - d.y).toFixed(2)};--d:${d.delay}`}
+        />
+      ))
+    }
+    <span class="hidden-label" style={`right:${(100 - hiddenLeft + 2.2).toFixed(2)}%;top:${hiddenMidY}%`}>
+      hidden by the average →
+    </span>
+  </div>
+  <figcaption class="plot-caption">
+    <span><span class="plot-fig">Fig. 1</span> Illustrative data. On average, everything looked fine.</span>
+    <button type="button" class="plot-replay" data-replay hidden>Replay</button>
+  </figcaption>
+  <script is:inline>
+    (function () {
+      var fig = document.currentScript.closest('[data-dotplot]');
+      if (!fig || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      var btn = fig.querySelector('[data-replay]');
+      var timer;
+      function collapse() {
+        fig.classList.add('no-anim', 'is-collapsed');
+        void fig.offsetWidth;
+        fig.classList.remove('no-anim');
+      }
+      function spread(delay) {
+        clearTimeout(timer);
+        timer = setTimeout(function () { fig.classList.remove('is-collapsed'); }, delay);
+      }
+      collapse();
+      btn.hidden = false;
+      btn.addEventListener('click', function () { collapse(); spread(350); });
+      // Start only after the page has loaded, so the animation never competes with it.
+      function watch() {
+        var io = new IntersectionObserver(function (entries) {
+          if (entries[0].isIntersecting) { spread(450); io.disconnect(); }
+        }, { threshold: 0.35 });
+        io.observe(fig);
+      }
+      if (document.readyState === 'complete') watch();
+      else addEventListener('load', watch, { once: true });
+    })();
+  </script>
+</figure>
+
+<style>
+  .plot {
+    margin: 0;
+  }
+  .area {
+    position: relative;
+    height: clamp(13.5rem, 9rem + 14vw, 21rem);
+    container-type: size;
+  }
+  .mean {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1.25px;
+    margin-top: -0.6px;
+    background: var(--text);
+  }
+  .mean-label,
+  .hidden-label {
+    position: absolute;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+  .mean-label {
+    right: 0;
+    margin-top: -1.15rem;
+    color: var(--muted);
+  }
+  .hidden-label {
+    margin-top: -0.4rem;
+    color: var(--accent);
+    transition: opacity 300ms var(--ease-out) 1100ms;
+  }
+  .dot {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    margin: -4px 0 0 -4px;
+    border-radius: 50%;
+    background: var(--dot);
+    transition: transform 750ms var(--ease-out) calc(var(--d) * 350ms);
+  }
+  .dot--hidden {
+    background: var(--accent);
+    transition:
+      transform 750ms var(--ease-out) calc(var(--d) * 350ms),
+      background-color 300ms var(--ease-out) 950ms;
+  }
+
+  .is-collapsed .dot {
+    transform: translateY(calc(var(--c) * 1cqh));
+  }
+  .is-collapsed .dot--hidden {
+    background: var(--dot);
+  }
+  .is-collapsed .hidden-label {
+    opacity: 0;
+    transition-delay: 0ms;
+  }
+  .no-anim .dot,
+  .no-anim .hidden-label {
+    transition: none !important;
+  }
+
+  @media (max-width: 47.99rem) {
+    .dot--extra {
+      display: none;
+    }
+  }
+
+  .plot-caption {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-4);
+    margin-top: var(--space-4);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .plot-fig {
+    color: var(--text);
+    margin-right: 0.75em;
+  }
+  .plot-replay {
+    font: inherit;
+    color: var(--muted);
+    background: none;
+    border: 0;
+    padding: 0.25rem 0;
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-color: var(--border);
+    text-underline-offset: 0.25em;
+    white-space: nowrap;
+  }
+  .plot-replay:hover {
+    color: var(--accent);
+    text-decoration-color: var(--accent);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .plot-replay {
+      display: none;
+    }
+  }
+</style>

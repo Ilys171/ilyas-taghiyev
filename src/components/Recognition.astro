@@ -1,0 +1,93 @@
+---
+import SectionHead from './SectionHead.astro';
+import { honors, media } from '../data/content';
+---
+
+<section id="recognition" class="section" aria-labelledby="recognition-title">
+  <div class="wrap">
+    <SectionHead num="03" label="Recognition" title="Recognition" id="recognition" />
+
+    <div class="grid-12">
+      <div class="col col-a" data-reveal>
+        <h3 class="label">Honors</h3>
+        <ul>
+          {
+            honors.map((h) => (
+              <li>
+                <span class="item">{h.title}</span>
+                <span class="note">{h.note}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <div class="col col-b" data-reveal>
+        <h3 class="label">Media &amp; letters</h3>
+        <ul>
+          {
+            media.map((m) => (
+              <li>
+                <span class="item">
+                  {m.href ? (
+                    <a class="link ext" href={m.href} target="_blank" rel="noopener noreferrer">
+                      {m.outlet}
+                      <span class="sr-only"> (opens in a new tab)</span>
+                    </a>
+                  ) : (
+                    m.outlet
+                  )}
+                </span>
+                <span class="note">{m.text}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .col {
+    grid-column: 1 / -1;
+  }
+  .col-b {
+    margin-top: var(--space-7);
+  }
+  h3 {
+    margin: 0 0 var(--space-3);
+    font-weight: 400;
+  }
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  li {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding-block: var(--space-3);
+    border-top: 1px solid var(--border);
+  }
+  .item {
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    line-height: 1.3;
+  }
+  .note {
+    font-size: var(--step--1);
+    color: var(--muted);
+    line-height: 1.45;
+  }
+  @media (min-width: 64rem) {
+    .col-a {
+      grid-column: 4 / span 4;
+    }
+    .col-b {
+      grid-column: 9 / span 4;
+      margin-top: 0;
+    }
+  }
+</style>

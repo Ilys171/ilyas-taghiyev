@@ -1,0 +1,201 @@
+---
+import SectionHead from './SectionHead.astro';
+import { research as r } from '../data/content';
+---
+
+<section id="research" class="section" aria-labelledby="research-title">
+  <div class="wrap">
+    <SectionHead num="02" label="Research" title="Research" id="research">
+      <p>An independent working paper in financial statistics, and field studies in biology.</p>
+    </SectionHead>
+
+    <div class="grid-12">
+      <article class="paper" aria-labelledby="paper-title" data-reveal>
+        <p class="label kicker">{r.kicker}</p>
+        <h3 id="paper-title" class="paper-title">{r.title}</h3>
+        <p class="authors">
+          {
+            r.authors.map((a, i) => (
+              <>
+                {i > 0 && ', '}
+                <span class="author">{a.name}</span>
+                {a.note && <span class="author-note"> ({a.note})</span>}
+              </>
+            ))
+          }
+        </p>
+
+        <div class="abstract">
+          <h4 class="label">Abstract</h4>
+          <p class="pretty">{r.abstract}</p>
+        </div>
+
+        <div class="result">
+          <p class="result-v">{r.keyResult.value}</p>
+          <p class="result-l">
+            {r.keyResult.label}
+            <span class="meta result-c">{r.keyResult.context}</span>
+          </p>
+        </div>
+
+        <p class="pdf meta">
+          {
+            r.pdf ? (
+              <a class="link" href={r.pdf}>Read the paper (PDF)</a>
+            ) : (
+              /* TODO: [PLACEHOLDER] PDF link appears automatically once research.pdf is set in content.ts */
+              <span>PDF available when the paper is public</span>
+            )
+          }
+        </p>
+      </article>
+
+      <div class="field" data-reveal>
+        <h3 class="field-title">{r.field.title}</h3>
+        <ul>
+          {
+            r.field.items.map((f) => (
+              <li>
+                <span class="meta when">{f.when}</span>
+                <p>{f.text}</p>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .paper {
+    grid-column: 1 / -1;
+    background: var(--surface);
+    padding: var(--space-6) var(--space-4);
+    text-align: center;
+  }
+  .kicker {
+    margin: 0;
+  }
+  .paper-title {
+    font-size: var(--step-4);
+    line-height: 1.12;
+    letter-spacing: -0.01em;
+    max-width: 30ch;
+    margin: var(--space-4) auto 0;
+  }
+  .authors {
+    margin: var(--space-4) 0 0;
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+  .author {
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.04em;
+    font-size: 1.12em;
+    color: var(--text);
+  }
+  .abstract {
+    max-width: 40rem;
+    margin: var(--space-6) auto 0;
+    text-align: left;
+  }
+  .abstract h4 {
+    margin: 0 0 var(--space-2);
+    font-family: var(--font-mono);
+    font-weight: 400;
+  }
+  .abstract p {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    line-height: 1.5;
+    hyphens: auto;
+  }
+  .result {
+    max-width: 40rem;
+    margin: var(--space-6) auto 0;
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--text);
+    text-align: left;
+    display: grid;
+    gap: var(--space-2);
+  }
+  .result-v {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: var(--step-5);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--accent);
+  }
+  .result-l {
+    margin: 0;
+    max-width: 40ch;
+  }
+  .result-c {
+    display: block;
+    margin-top: var(--space-1);
+    font-size: var(--step--2);
+  }
+  .pdf {
+    max-width: 40rem;
+    margin: var(--space-5) auto 0;
+    text-align: left;
+    font-size: var(--step--2);
+  }
+
+  .field {
+    grid-column: 1 / -1;
+    margin-top: var(--space-7);
+  }
+  .field-title {
+    font-size: var(--step-2);
+    margin: 0 0 var(--space-4);
+  }
+  .field ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .field li {
+    display: grid;
+    gap: var(--space-1) var(--space-4);
+    padding-block: var(--space-4);
+    border-top: 1px solid var(--border);
+  }
+  .field li p {
+    margin: 0;
+    max-width: 64ch;
+  }
+  .when {
+    font-size: var(--step--2);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding-top: 0.3em;
+  }
+
+  @media (min-width: 48rem) {
+    .paper {
+      padding: var(--space-8) var(--space-7);
+    }
+    .result {
+      grid-template-columns: auto 1fr;
+      align-items: end;
+      gap: var(--space-5);
+    }
+    .field li {
+      grid-template-columns: 8rem 1fr;
+    }
+  }
+  @media (min-width: 64rem) {
+    .paper {
+      grid-column: 4 / -1;
+    }
+    .field {
+      grid-column: 4 / -1;
+    }
+  }
+</style>

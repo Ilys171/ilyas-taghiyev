@@ -1,0 +1,61 @@
+---
+/**
+ * The editorial section skeleton: a narrow margin column with the section
+ * number and label, and the heading + intro in the wide content column.
+ */
+interface Props {
+  num: string;
+  label: string;
+  title: string;
+  id: string;
+}
+const { num, label, title, id } = Astro.props;
+---
+
+<div class="grid-12 head" data-reveal>
+  <p class="label margin"><span class="num">§&nbsp;{num}</span>{label}</p>
+  <div class="body">
+    <h2 id={`${id}-title`}>{title}</h2>
+    <slot />
+  </div>
+</div>
+
+<style>
+  .head {
+    row-gap: var(--space-3);
+    margin-bottom: var(--space-7);
+  }
+  .margin {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: var(--space-3);
+  }
+  .num {
+    color: var(--text);
+  }
+  .body {
+    grid-column: 1 / -1;
+  }
+  h2 {
+    font-size: var(--step-5);
+    line-height: 1.05;
+    letter-spacing: -0.015em;
+    margin: 0;
+  }
+  .body :global(p) {
+    margin: var(--space-4) 0 0;
+    max-width: 60ch;
+    color: var(--muted);
+  }
+  @media (min-width: 64rem) {
+    .margin {
+      grid-column: 1 / span 3;
+      flex-direction: column;
+      gap: var(--space-1);
+      padding-top: 0.9em;
+    }
+    .body {
+      grid-column: 4 / -1;
+    }
+  }
+</style>

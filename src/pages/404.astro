@@ -1,0 +1,23 @@
+---
+import Base from '../layouts/Base.astro';
+import { site } from '../data/content';
+---
+
+<Base title={`Page not found — ${site.name}`} home={false}>
+  <div class="wrap nf">
+    <p class="label">Error 404</p>
+    <h1>This page is an outlier.</h1>
+    <p><a class="link" href="/">Back to the home page</a></p>
+  </div>
+</Base>
+
+<style>
+  .nf {
+    padding-block: var(--space-9);
+  }
+  h1 {
+    font-size: var(--step-5);
+    line-height: 1.05;
+    margin: var(--space-3) 0 var(--space-5);
+  }
+</style>

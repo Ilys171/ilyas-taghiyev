@@ -1,0 +1,93 @@
+---
+import SectionHead from './SectionHead.astro';
+import { about } from '../data/content';
+---
+
+<section id="about" class="section" aria-labelledby="about-title">
+  <div class="wrap">
+    <SectionHead num="04" label="About" title="About" id="about" />
+
+    <div class="grid-12">
+      <div class="text" data-reveal>
+        {about.paragraphs.map((p) => <p class="pretty">{p}</p>)}
+      </div>
+
+      <aside class="facts" aria-label="Facts" data-reveal>
+        {
+          about.photo && (
+            <img class="photo" src={about.photo.src} alt={about.photo.alt} width="480" height="600" loading="lazy" decoding="async" />
+          )
+        }
+        <dl>
+          {
+            about.facts.map((f) => (
+              <div>
+                <dt class="label">{f.key}</dt>
+                <dd>
+                  {f.value}
+                  {f.note && <span class="note">{f.note}</span>}
+                </dd>
+              </div>
+            ))
+          }
+        </dl>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<style>
+  .text {
+    grid-column: 1 / -1;
+  }
+  .text p {
+    margin: 0 0 var(--space-4);
+    max-width: 60ch;
+    font-size: var(--step-1);
+    line-height: 1.55;
+  }
+  .text p:first-child {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    line-height: 1.35;
+  }
+  .facts {
+    grid-column: 1 / -1;
+    margin-top: var(--space-6);
+  }
+  .photo {
+    width: 100%;
+    max-width: 18rem;
+    height: auto;
+    margin-bottom: var(--space-5);
+  }
+  dl {
+    margin: 0;
+  }
+  dl div {
+    padding-block: var(--space-3);
+    border-top: 1px solid var(--border);
+  }
+  dt {
+    margin-bottom: var(--space-1);
+  }
+  dd {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    line-height: 1.5;
+  }
+  .note {
+    display: block;
+    color: var(--muted);
+  }
+  @media (min-width: 64rem) {
+    .text {
+      grid-column: 4 / span 5;
+    }
+    .facts {
+      grid-column: 10 / span 3;
+      margin-top: 0;
+    }
+  }
+</style>

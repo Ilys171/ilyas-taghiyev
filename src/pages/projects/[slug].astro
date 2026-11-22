@@ -1,0 +1,302 @@
+---
+import Base from '../../layouts/Base.astro';
+import { projects, site, statusLabel, type Project } from '../../data/content';
+
+export function getStaticPaths() {
+  return projects.map((project, i) => ({
+    params: { slug: project.slug },
+    props: { project, next: projects[(i + 1) % projects.length] },
+  }));
+}
+
+interface Props {
+  project: Project;
+  next: Project;
+}
+const { project: p, next } = Astro.props;
+
+const sections: { key: keyof Project['detail']; title: string }[] = [
+  { key: 'problem', title: 'The problem' },
+  { key: 'built', title: p.status === 'upcoming' ? 'What we will build' : 'What we built' },
+  { key: 'myRole', title: 'My role' },
+  { key: 'learned', title: 'What we learned' },
+];
+---
+
+<Base title={`${p.title} — ${site.name}`} description={`${p.summary} ${p.role}.`} home={false}>
+  <article class="wrap page" aria-labelledby="title">
+    <p class="back meta"><a class="link" href="/#projects">← All projects</a></p>
+
+    <header class="grid-12 head">
+      <div class="aside meta">
+        <span class:list={['badge', { 'badge--accent': p.status === 'upcoming' }]}>
+          {statusLabel[p.status]}{p.statusNote && <> · {p.statusNote}</>}
+        </span>
+        {(p.dates ?? p.years) && <span class="years">{p.dates ?? p.years}</span>}
+      </div>
+      <div class="intro">
+        <h1 id="title">{p.title}</h1>
+        <p class="summary">{p.summary}</p>
+        <dl class="kv">
+          <div><dt class="label">Role</dt><dd>{p.role}</dd></div>
+          <div><dt class="label">For</dt><dd>{p.audience}</dd></div>
+        </dl>
+      </div>
+    </header>
+
+    {
+      p.facts.length > 0 && (
+        <section class="grid-12 detail-block" aria-labelledby="numbers">
+          <h2 id="numbers" class="label side-label">Key numbers</h2>
+          <ul class="figures">
+            {p.facts.map((f) => (
+              <li>
+                <span class="fig-v">{f.value}</span>
+                <span class="fig-l">{f.label}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    {
+      sections.map((s) => (
+        <section class="grid-12 detail-block" aria-labelledby={`s-${s.key}`}>
+          <h2 id={`s-${s.key}`} class="side-title">{s.title}</h2>
+          <div class="prose">
+            {p.detail[s.key] ? (
+              <p>{p.detail[s.key]}</p>
+            ) : (
+              // TODO: [PLACEHOLDER] Ilyas to write this section in content.ts → detail.
+              <p class="placeholder">Placeholder: Ilyas to write “{s.title}”.</p>
+            )}
+          </div>
+        </section>
+      ))
+    }
+
+    {
+      p.recognition && p.recognition.length > 0 && (
+        <section class="grid-12 detail-block" aria-labelledby="s-recognition">
+          <h2 id="s-recognition" class="side-title">Recognition</h2>
+          <ul class="prose plain">
+            {p.recognition.map((r) => <li>{r}</li>)}
+          </ul>
+        </section>
+      )
+    }
+
+    {
+      p.links.length > 0 && (
+        <section class="grid-12 detail-block" aria-labelledby="s-links">
+          <h2 id="s-links" class="side-title">Links</h2>
+          <ul class="prose plain links">
+            {p.links.map((l) => (
+              <li>
+                <span class="label">{l.kind === 'website' ? 'Website' : 'Press'}</span>
+                <a class="link ext" href={l.href} target="_blank" rel="noopener noreferrer">
+                  {l.label}
+                  <span class="sr-only"> (opens in a new tab)</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    <nav class="pager" aria-label="Projects">
+      <a class="link" href="/#projects">← All projects</a>
+      <a class="next" href={`/projects/${next.slug}`}>
+        <span class="label">Next project</span>
+        <span class="next-title">{next.title} <span aria-hidden="true">→</span></span>
+      </a>
+    </nav>
+  </article>
+</Base>
+
+<style>
+  .page {
+    padding-top: var(--space-6);
+    padding-bottom: var(--space-8);
+  }
+  .back {
+    margin: 0 0 var(--space-7);
+  }
+  .head {
+    row-gap: var(--space-4);
+    padding-bottom: var(--space-7);
+  }
+  .aside {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+  }
+  .intro {
+    grid-column: 1 / -1;
+  }
+  h1 {
+    margin: 0;
+    font-size: var(--step-6);
+    line-height: 0.98;
+    letter-spacing: -0.025em;
+    font-weight: 380;
+  }
+  .summary {
+    margin: var(--space-4) 0 0;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--step-2);
+    line-height: 1.3;
+    max-width: 34ch;
+  }
+  .kv {
+    display: grid;
+    gap: var(--space-3);
+    margin: var(--space-6) 0 0;
+  }
+  .kv div {
+    border-top: 1px solid var(--border);
+    padding-top: var(--space-2);
+  }
+  .kv dd {
+    margin: var(--space-1) 0 0;
+  }
+
+  .detail-block {
+    row-gap: var(--space-3);
+    padding-block: var(--space-6);
+    border-top: 1px solid var(--border);
+  }
+  .side-label,
+  .side-title {
+    grid-column: 1 / -1;
+    margin: 0;
+  }
+  .side-label {
+    font-weight: 400;
+  }
+  .side-title {
+    font-size: var(--step-2);
+    line-height: 1.2;
+  }
+  .prose {
+    grid-column: 1 / -1;
+    margin: 0;
+  }
+  .prose p {
+    margin: 0;
+    max-width: 64ch;
+    font-size: var(--step-1);
+    line-height: 1.55;
+  }
+  .prose .placeholder {
+    font-size: var(--step--1);
+  }
+  .plain {
+    list-style: none;
+    padding: 0;
+  }
+  .plain li {
+    padding-block: var(--space-2);
+  }
+  .links li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-3);
+  }
+  .links .label {
+    min-width: 5rem;
+  }
+
+  .figures {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    gap: var(--space-5);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .figures li {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    border-top: 1px solid var(--text);
+    padding-top: var(--space-3);
+  }
+  .fig-v {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: var(--step-5);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .fig-l {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+
+  .pager {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: var(--space-5);
+    margin-top: var(--space-6);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--text);
+    font-size: var(--step--1);
+  }
+  .next {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: var(--space-1);
+    text-align: right;
+  }
+  .next-title {
+    font-family: var(--font-display);
+    font-size: var(--step-3);
+    line-height: 1.15;
+    transition: color 200ms var(--ease-out);
+  }
+  .next:hover .next-title {
+    color: var(--accent);
+  }
+
+  @media (min-width: 64rem) {
+    .aside {
+      grid-column: 1 / span 3;
+      flex-direction: column;
+      align-items: flex-start;
+      padding-top: 1.1em;
+    }
+    .intro {
+      grid-column: 4 / -1;
+    }
+    .kv {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-5);
+      max-width: 48rem;
+    }
+    .side-label,
+    .side-title {
+      grid-column: 1 / span 3;
+    }
+    .side-title {
+      font-size: var(--step-1);
+      padding-top: 0.15em;
+    }
+    .prose,
+    .figures {
+      grid-column: 4 / -1;
+    }
+  }
+</style>
