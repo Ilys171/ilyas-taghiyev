@@ -4,6 +4,6 @@ dist/
 .vercel/
 qa/
 .DS_Store
-
+private/
 .vercel
 .env*
