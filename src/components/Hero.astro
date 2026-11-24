@@ -1,5 +1,5 @@
 ---
-import DotPlot from './DotPlot.astro';
+import GaltonBoard from './GaltonBoard.astro';
 import { site } from '../data/content';
 ---
 
@@ -25,9 +25,9 @@ import { site } from '../data/content';
           <a class="action" href="#contact">Contact <span aria-hidden="true">↓</span></a>
         </p>
       </div>
-    </div>
-    <div class="figure">
-      <DotPlot />
+      <div class="figure">
+        <GaltonBoard />
+      </div>
     </div>
   </div>
 </section>
@@ -42,7 +42,8 @@ import { site } from '../data/content';
   }
   .hero-meta,
   h1,
-  .statement {
+  .statement,
+  .figure {
     grid-column: 1 / -1;
     margin: 0;
   }
@@ -111,7 +112,10 @@ import { site } from '../data/content';
     translate: 0 2px;
   }
   .figure {
-    margin-top: var(--space-6);
+    margin-top: var(--space-5);
+    max-width: 40rem;
+    width: 100%;
+    justify-self: center;
   }
 
   @media (min-width: 64rem) {
@@ -120,11 +124,21 @@ import { site } from '../data/content';
     }
     .hero-meta,
     h1 {
-      grid-column: 1 / -1;
+      grid-column: 1 / span 7;
     }
     .statement {
-      grid-column: 4 / span 7;
+      grid-column: 1 / span 6;
+      grid-row: 3;
       margin-top: var(--space-5);
+      align-self: start;
+    }
+    .figure {
+      grid-column: 8 / -1;
+      grid-row: 1 / span 3;
+      align-self: end;
+      margin-top: 0;
+      max-width: 34rem;
+      justify-self: end;
     }
   }
   @media (prefers-reduced-motion: reduce) {

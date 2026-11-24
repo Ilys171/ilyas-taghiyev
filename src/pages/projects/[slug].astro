@@ -1,6 +1,8 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { projects, site, statusLabel, type Project } from '../../data/content';
+import Photo from '../../components/Photo.astro';
+import Num from '../../components/Num.astro';
+import { projects, site, type Project } from '../../data/content';
 
 export function getStaticPaths() {
   return projects.map((project, i) => ({
@@ -14,13 +16,17 @@ interface Props {
   next: Project;
 }
 const { project: p, next } = Astro.props;
+const d = p.detail;
+const dev = import.meta.env.DEV;
 
-const sections: { key: keyof Project['detail']; title: string }[] = [
-  { key: 'problem', title: 'The problem' },
-  { key: 'built', title: p.status === 'upcoming' ? 'What we will build' : 'What we built' },
-  { key: 'myRole', title: 'My role' },
-  { key: 'learned', title: 'What we learned' },
-];
+// The story every project page tells. Empty parts are hidden on the live
+// site and shown as “Ilyas to write” boxes in dev (see TODO.md).
+const sections = [
+  { key: 'problem', title: 'The problem', text: d.problem },
+  { key: 'built', title: d.builtTitle ?? 'What I built', text: d.built },
+  { key: 'measured', title: d.measuredTitle ?? 'What I measured', text: d.measured },
+  { key: 'learned', title: 'What I learned', text: d.learned },
+].filter((s) => s.text || dev);
 ---
 
 <Base title={`${p.title} — ${site.name}`} description={`${p.summary} ${p.role}.`} home={false}>
@@ -29,29 +35,35 @@ const sections: { key: keyof Project['detail']; title: string }[] = [
 
     <header class="grid-12 head">
       <div class="aside meta">
-        <span class:list={['badge', { 'badge--accent': p.status === 'upcoming' }]}>
-          {statusLabel[p.status]}{p.statusNote && <> · {p.statusNote}</>}
-        </span>
-        {(p.dates ?? p.years) && <span class="years">{p.dates ?? p.years}</span>}
+        <span>{p.grades}</span>
+        <span>{p.time}</span>
       </div>
       <div class="intro">
-        <h1 id="title">{p.title}</h1>
+        <h1 id="title" style={`view-transition-name:t-${p.slug}`}>{p.title}</h1>
         <p class="summary">{p.summary}</p>
         <dl class="kv">
           <div><dt class="label">Role</dt><dd>{p.role}</dd></div>
-          <div><dt class="label">For</dt><dd>{p.audience}</dd></div>
+          {p.audience && <div><dt class="label">For</dt><dd>{p.audience}</dd></div>}
         </dl>
       </div>
     </header>
 
     {
+      p.photo && (
+        <div class="grid-12 lead-photo">
+          <Photo id={p.photo} eager sizes="(min-width: 64rem) 75vw, 100vw" />
+        </div>
+      )
+    }
+
+    {
       p.facts.length > 0 && (
-        <section class="grid-12 detail-block" aria-labelledby="numbers">
+        <section class="grid-12 detail-block" aria-labelledby="numbers" data-reveal>
           <h2 id="numbers" class="label side-label">Key numbers</h2>
           <ul class="figures">
             {p.facts.map((f) => (
               <li>
-                <span class="fig-v">{f.value}</span>
+                <span class="fig-v"><Num value={f.value} /></span>
                 <span class="fig-l">{f.label}</span>
               </li>
             ))}
@@ -61,15 +73,17 @@ const sections: { key: keyof Project['detail']; title: string }[] = [
     }
 
     {
-      sections.map((s) => (
-        <section class="grid-12 detail-block" aria-labelledby={`s-${s.key}`}>
-          <h2 id={`s-${s.key}`} class="side-title">{s.title}</h2>
+      sections.map((s, i) => (
+        <section class="grid-12 detail-block" aria-labelledby={`s-${s.key}`} data-reveal>
+          <h2 id={`s-${s.key}`} class="side-title">
+            <span class="step" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+            {s.title}
+          </h2>
           <div class="prose">
-            {p.detail[s.key] ? (
-              <p>{p.detail[s.key]}</p>
+            {s.text ? (
+              <p>{s.text}</p>
             ) : (
-              // TODO: [PLACEHOLDER] Ilyas to write this section in content.ts → detail.
-              <p class="placeholder">Placeholder: Ilyas to write “{s.title}”.</p>
+              <p class="placeholder">Dev only · Ilyas to write “{s.title}” in content.ts → detail.{s.key}</p>
             )}
           </div>
         </section>
@@ -78,7 +92,7 @@ const sections: { key: keyof Project['detail']; title: string }[] = [
 
     {
       p.recognition && p.recognition.length > 0 && (
-        <section class="grid-12 detail-block" aria-labelledby="s-recognition">
+        <section class="grid-12 detail-block" aria-labelledby="s-recognition" data-reveal>
           <h2 id="s-recognition" class="side-title">Recognition</h2>
           <ul class="prose plain">
             {p.recognition.map((r) => <li>{r}</li>)}
@@ -89,7 +103,7 @@ const sections: { key: keyof Project['detail']; title: string }[] = [
 
     {
       p.links.length > 0 && (
-        <section class="grid-12 detail-block" aria-labelledby="s-links">
+        <section class="grid-12 detail-block" aria-labelledby="s-links" data-reveal>
           <h2 id="s-links" class="side-title">Links</h2>
           <ul class="prose plain links">
             {p.links.map((l) => (
@@ -182,6 +196,20 @@ const sections: { key: keyof Project['detail']; title: string }[] = [
   .side-title {
     font-size: var(--step-2);
     line-height: 1.2;
+  }
+  .lead-photo {
+    padding-bottom: var(--space-6);
+  }
+  .lead-photo > :global(*) {
+    grid-column: 1 / -1;
+  }
+  .step {
+    display: block;
+    margin-bottom: var(--space-1);
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    color: var(--muted);
+    letter-spacing: 0.06em;
   }
   .prose {
     grid-column: 1 / -1;
@@ -295,7 +323,8 @@ const sections: { key: keyof Project['detail']; title: string }[] = [
       padding-top: 0.15em;
     }
     .prose,
-    .figures {
+    .figures,
+    .lead-photo > :global(*) {
       grid-column: 4 / -1;
     }
   }

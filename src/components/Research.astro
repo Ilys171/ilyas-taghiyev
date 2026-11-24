@@ -1,12 +1,13 @@
 ---
 import SectionHead from './SectionHead.astro';
 import { research as r } from '../data/content';
+const { low, high } = r.keyResult;
 ---
 
 <section id="research" class="section" aria-labelledby="research-title">
   <div class="wrap">
     <SectionHead num="02" label="Research" title="Research" id="research">
-      <p>An independent working paper in financial statistics, and field studies in biology.</p>
+      <p>An independent preprint in financial statistics.</p>
     </SectionHead>
 
     <div class="grid-12">
@@ -18,51 +19,50 @@ import { research as r } from '../data/content';
             r.authors.map((a, i) => (
               <>
                 {i > 0 && ', '}
-                <span class="author">{a.name}</span>
-                {a.note && <span class="author-note"> ({a.note})</span>}
+                <span class="author">{a}</span>
               </>
             ))
           }
         </p>
 
         <div class="abstract">
-          <h4 class="label">Abstract</h4>
-          <p class="pretty">{r.abstract}</p>
+          <h4 class="label">In short</h4>
+          <p class="pretty">{r.summary}</p>
+          <p class="mine"><span class="label">My part</span> {r.myPart}</p>
         </div>
 
         <div class="result">
           <p class="result-v">{r.keyResult.value}</p>
-          <p class="result-l">
-            {r.keyResult.label}
-            <span class="meta result-c">{r.keyResult.context}</span>
-          </p>
+          <p class="result-l">{r.keyResult.label}</p>
         </div>
 
+        <figure class="share" data-share>
+          <div
+            class="share-track"
+            role="img"
+            aria-label={`Bar from 0 to 100% of squared forecast error. Asset-risk surprises account for ${low}% to ${high}%; correlation surprises for the rest.`}
+          >
+            <span class="share-fill" style={`width:${low}%`}></span>
+            <span class="share-band" style={`left:${low}%;width:${high - low}%`}></span>
+          </div>
+          <div class="share-scale" aria-hidden="true">
+            <span style="left:0">0%</span>
+            <span class="hi" style={`left:${low}%`}>{low}%</span>
+            <span class="hi" style={`left:${high}%`}>{high}%</span>
+          </div>
+          <figcaption>
+            <span class="share-note"><i class="key key-fill"></i>asset-risk surprises</span>
+            <span class="share-note"><i class="key key-band"></i>the range we found, {low}–{high}%</span>
+            <span class="share-note"><i class="key key-rest"></i>correlation surprises: the rest</span>
+          </figcaption>
+        </figure>
+
         <p class="pdf meta">
-          {
-            r.pdf ? (
-              <a class="link" href={r.pdf}>Read the paper (PDF)</a>
-            ) : (
-              /* TODO: [PLACEHOLDER] PDF link appears automatically once research.pdf is set in content.ts */
-              <span>PDF available when the paper is public</span>
-            )
-          }
+          <a class="link ext" href={r.link.href} target="_blank" rel="noopener noreferrer">
+            {r.link.label}<span class="sr-only"> (opens in a new tab)</span>
+          </a>
         </p>
       </article>
-
-      <div class="field" data-reveal>
-        <h3 class="field-title">{r.field.title}</h3>
-        <ul>
-          {
-            r.field.items.map((f) => (
-              <li>
-                <span class="meta when">{f.when}</span>
-                <p>{f.text}</p>
-              </li>
-            ))
-          }
-        </ul>
-      </div>
     </div>
   </div>
 </section>
@@ -135,10 +135,94 @@ import { research as r } from '../data/content';
     margin: 0;
     max-width: 40ch;
   }
-  .result-c {
-    display: block;
+  .abstract .mine {
+    margin: var(--space-4) 0 0;
+    hyphens: manual;
+    font-family: var(--font-sans);
+    font-size: var(--step-0);
+    color: var(--muted);
+    line-height: 1.55;
+  }
+  .mine .label {
+    margin-right: 0.5em;
+  }
+
+  .share {
+    max-width: 40rem;
+    margin: var(--space-5) auto 0;
+    text-align: left;
+  }
+  .share-track {
+    position: relative;
+    height: 14px;
+    background: var(--bg);
+    box-shadow: inset 0 0 0 1px var(--border);
+    overflow: hidden;
+  }
+  .share-fill,
+  .share-band {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+  }
+  .share-fill {
+    background: var(--accent);
+  }
+  .share-band {
+    background: repeating-linear-gradient(-45deg, var(--accent) 0 2px, transparent 2px 6px);
+  }
+  .share-scale {
+    position: relative;
+    height: 1.5em;
     margin-top: var(--space-1);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .share-scale span {
+    position: absolute;
+    top: 0;
+    translate: -50% 0;
+  }
+  .share-scale span:first-child {
+    translate: 0 0;
+  }
+  .share-scale .hi {
+    color: var(--text);
+  }
+  .share-scale .hi:last-child {
+    translate: -60% 0;
+  }
+  .share figcaption {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-4);
+    margin-top: var(--space-2);
+    font-family: var(--font-mono);
     font-size: var(--step--2);
+    color: var(--muted);
+  }
+  .share-note {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+  }
+  .key {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+  }
+  .key-fill {
+    background: var(--accent);
+  }
+  .key-band {
+    background: repeating-linear-gradient(-45deg, var(--accent) 0 2px, transparent 2px 5px);
+    box-shadow: inset 0 0 0 1px var(--accent);
+  }
+  .key-rest {
+    box-shadow: inset 0 0 0 1px var(--border);
+    background: var(--bg);
   }
   .pdf {
     max-width: 40rem;
@@ -147,35 +231,6 @@ import { research as r } from '../data/content';
     font-size: var(--step--2);
   }
 
-  .field {
-    grid-column: 1 / -1;
-    margin-top: var(--space-7);
-  }
-  .field-title {
-    font-size: var(--step-2);
-    margin: 0 0 var(--space-4);
-  }
-  .field ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-  .field li {
-    display: grid;
-    gap: var(--space-1) var(--space-4);
-    padding-block: var(--space-4);
-    border-top: 1px solid var(--border);
-  }
-  .field li p {
-    margin: 0;
-    max-width: 64ch;
-  }
-  .when {
-    font-size: var(--step--2);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    padding-top: 0.3em;
-  }
 
   @media (min-width: 48rem) {
     .paper {
@@ -186,15 +241,9 @@ import { research as r } from '../data/content';
       align-items: end;
       gap: var(--space-5);
     }
-    .field li {
-      grid-template-columns: 8rem 1fr;
-    }
   }
   @media (min-width: 64rem) {
     .paper {
-      grid-column: 4 / -1;
-    }
-    .field {
       grid-column: 4 / -1;
     }
   }

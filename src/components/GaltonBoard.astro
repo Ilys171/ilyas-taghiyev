@@ -1,0 +1,182 @@
+---
+/**
+ * Fig. 1 — the signature: balls fall through a Galton board and pile up
+ * into a bell curve (the average). One bounces clear of it and becomes a
+ * child. The HTML holds the final state; JS (src/scripts/galton.ts) only
+ * replays the fall, and only when motion is allowed.
+ */
+import { makeGalton, BALL_R, KID } from '../lib/galton';
+
+const g = makeGalton();
+const v = g.view;
+const data = {
+  entry: g.entry,
+  kid: KID,
+  balls: g.balls.map((b) => b.path.map((p) => [p.x, p.y])),
+  deviant: g.deviant.path.map((p) => [p.x, p.y]),
+};
+const label = `Illustrative Galton board. ${g.balls.length} balls fall through rows of pegs and pile up into a bell curve around the average. One ball bounces clear of the curve and becomes a small figure of a child.`;
+---
+
+<figure class="galton" data-galton data-pending>
+  <div class="stage">
+    <svg viewBox={`${v.x} ${v.y} ${v.w} ${v.h}`} role="img" aria-label={label} data-galton-svg>
+      <path class="funnel" d={g.funnel}></path>
+      <g class="pegs">
+        {g.pegs.map((p) => <circle cx={p.x} cy={p.y} r={g.pegR} />)}
+      </g>
+      <g class="walls">
+        {g.walls.map((w) => <line class:list={{ mean: w.mean }} x1={w.x} x2={w.x} y1={w.y1} y2={w.y2} />)}
+      </g>
+      <line class="floor" x1={g.floor.x1} x2={g.floor.x2} y1={g.floor.y} y2={g.floor.y}></line>
+
+      <g class="balls">
+        {g.balls.map((b) => <circle class="ball" r={BALL_R} transform={`translate(${b.end.x} ${b.end.y})`} />)}
+      </g>
+      <path class="curve late" d={g.curve}></path>
+
+      <g class="kid" transform={`translate(${KID.x} ${KID.ground})`}>
+        <g class="kid-trunk">
+          <line x1="0" y1="-53" x2="0" y2="-26"></line>
+          <line x1="0" y1="-26" x2="-8" y2="0"></line>
+          <line x1="0" y1="-26" x2="8" y2="0"></line>
+        </g>
+        <g class="kid-arms">
+          <line x1="0" y1="-46" x2="-12" y2="-32"></line>
+          <line x1="0" y1="-46" x2="12" y2="-60"></line>
+        </g>
+      </g>
+      <g class="dev" transform={`translate(${g.deviant.end.x} ${g.deviant.end.y})`}>
+        <circle class="dev-base" r={KID.headR}></circle>
+        <circle class="dev-hot" r={KID.headR}></circle>
+      </g>
+    </svg>
+
+    <span class="tag tag-avg late" style={`left:${g.labels.average.x}%;top:${g.labels.average.y}%`}>average</span>
+    <span class="tag tag-kid late-kid" style={`left:${g.labels.kid.x}%;top:${g.labels.kid.y}%`}>n&nbsp;=&nbsp;1</span>
+  </div>
+
+  <figcaption class="caption">
+    <span><span class="fig">Fig. 1</span> Illustrative simulation. The average is real. So is the child it hides.</span>
+    <button type="button" class="replay" data-replay hidden>Replay</button>
+  </figcaption>
+
+  <script type="application/json" data-galton-data set:html={JSON.stringify(data)} />
+</figure>
+
+<script>
+  import '../scripts/galton';
+</script>
+
+<style>
+  .galton {
+    margin: 0;
+  }
+  .stage {
+    position: relative;
+  }
+  svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+  .funnel,
+  .walls line,
+  .floor {
+    stroke: var(--border);
+    stroke-width: 1.25;
+    fill: none;
+    stroke-linecap: round;
+  }
+  .walls .mean {
+    stroke: var(--text);
+    stroke-dasharray: 2 4;
+  }
+  .floor {
+    stroke: var(--text);
+    stroke-width: 1;
+  }
+  .pegs circle {
+    fill: var(--dot);
+  }
+  .ball,
+  .dev-base {
+    fill: var(--dot);
+  }
+  .dev-hot {
+    fill: var(--accent);
+  }
+  .curve {
+    fill: none;
+    stroke: var(--muted);
+    stroke-width: 1;
+    stroke-dasharray: 3 4;
+  }
+  .kid line {
+    stroke: var(--accent);
+    stroke-width: 2.25;
+    stroke-linecap: round;
+  }
+  .tag {
+    position: absolute;
+    translate: -50% -50%;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    color: var(--muted);
+    background: var(--bg);
+    padding: 2px 4px;
+  }
+  .tag-kid {
+    color: var(--accent);
+  }
+
+  .caption {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-4);
+    margin-top: var(--space-3);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .fig {
+    color: var(--text);
+    margin-right: 0.75em;
+  }
+  .replay {
+    font: inherit;
+    color: var(--muted);
+    background: none;
+    border: 0;
+    padding: 0.5rem 0;
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-color: var(--border);
+    text-underline-offset: 0.25em;
+    white-space: nowrap;
+  }
+  .replay:hover {
+    color: var(--accent);
+    text-decoration-color: var(--accent);
+  }
+
+  /* Before the script takes over, hide what it will animate (motion only). */
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.js) [data-pending] :is(.ball, .dev, .kid, .late, .late-kid) {
+      opacity: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .replay {
+      display: none;
+    }
+  }
+</style>

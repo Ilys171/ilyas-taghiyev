@@ -64,6 +64,14 @@ const ogImage = new URL('/og.png', Astro.site);
           var t = localStorage.getItem('theme');
           if (t === 'light' || t === 'dark') d.dataset.theme = t;
         } catch (e) {}
+        // Safety net: if the motion scripts fail to load, show everything.
+        setTimeout(function () {
+          if (!window.__motion) d.classList.add('no-motion');
+          if (!window.__galton)
+            document.querySelectorAll('[data-pending]').forEach(function (el) {
+              el.removeAttribute('data-pending');
+            });
+        }, 3500);
       })();
     </script>
 
@@ -89,24 +97,7 @@ const ogImage = new URL('/og.png', Astro.site);
     <Footer />
 
     <script>
-      // Reveal sections once as they scroll into view.
-      const items = document.querySelectorAll<HTMLElement>('[data-reveal]');
-      if ('IntersectionObserver' in window) {
-        const io = new IntersectionObserver(
-          (entries) => {
-            for (const e of entries) {
-              if (e.isIntersecting) {
-                e.target.classList.add('is-in');
-                io.unobserve(e.target);
-              }
-            }
-          },
-          { rootMargin: '0px 0px -8% 0px' },
-        );
-        items.forEach((el) => io.observe(el));
-      } else {
-        items.forEach((el) => el.classList.add('is-in'));
-      }
+      import '../scripts/motion';
     </script>
   </body>
 </html>

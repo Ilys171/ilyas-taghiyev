@@ -1,0 +1,27 @@
+---
+/**
+ * A key number. Values of 10 or more count up when they scroll into view
+ * (src/scripts/motion.ts); screen readers always get the exact value.
+ * The text is the value exactly as written in content.ts.
+ */
+interface Props {
+  value: string;
+}
+const { value } = Astro.props;
+const m = value.match(/^(\d[\d,]*)(.*)$/s);
+const n = m ? Number(m[1].replace(/,/g, '')) : NaN;
+const counts = m && n >= 10;
+---
+
+{
+  counts ? (
+    <>
+      <span aria-hidden="true">
+        <span data-count={n} style={`min-width:${m![1].length}ch`}>{m![1]}</span>{m![2]}
+      </span>
+      <span class="sr-only">{value}</span>
+    </>
+  ) : (
+    value
+  )
+}

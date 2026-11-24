@@ -1,5 +1,11 @@
 # Design brief: ilyastaghiyev — personal site
 
+> **Amendments 2026-11-24** (approved by Ilyas; these override the sections below where they differ):
+> - **Hero figure:** the dot plot (§5.3) is replaced by an original **Galton board** (`src/components/GaltonBoard.astro`, geometry in `src/lib/galton.ts`, motion in `src/scripts/galton.ts`). 60 balls pile into a bell curve around a dashed “average” line; one ball bounces clear of the bins, turns accent and becomes a minimal line figure of a child (`n = 1`). This child figure is the **one deliberate exception** to “no illustrations” (§1, §7). The HTML holds the final state; reduced motion or no JS shows it still. Desktop: figure beside the name (cols 8–12); mobile: under the intro.
+> - **Motion** (§6) now uses GSAP + ScrollTrigger (≈ 46 KB gzipped JS total): staggered reveals (14px rise + fade, 600ms), count-ups for key numbers ≥ 10, a scroll-scrubbed 77–95% bar in Research, a sliding accent dot in the header nav, and cross-document View Transitions (CSS `@view-transition`) with the project title morphing between list and page.
+> - **Content:** the CV PDF is the only source. No status badges or years; projects show CV grades and hours. Project pages follow problem → built → measured → learned; empty parts are hidden in production.
+> - **Photos:** `<Photo id>` slots on project pages and About (see PHOTOS_NEEDED.md); hidden until a file exists.
+
 Status: **approved 2026-10-31**, with these changes from Ilyas:
 
 - **One project list, no “main” vs “other” split.** All 13 projects appear in one numbered list, ordered from the project that best shows the core idea (*help for young people*) to the one that shows it least. Every project row has the same structure and every project gets its own detail page. Sections 5.4, 5.5 and 5.10 below are updated accordingly.

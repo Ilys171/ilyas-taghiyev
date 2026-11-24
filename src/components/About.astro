@@ -1,6 +1,7 @@
 ---
 import SectionHead from './SectionHead.astro';
 import { about } from '../data/content';
+import Photo from './Photo.astro';
 ---
 
 <section id="about" class="section" aria-labelledby="about-title">
@@ -13,11 +14,7 @@ import { about } from '../data/content';
       </div>
 
       <aside class="facts" aria-label="Facts" data-reveal>
-        {
-          about.photo && (
-            <img class="photo" src={about.photo.src} alt={about.photo.alt} width="480" height="600" loading="lazy" decoding="async" />
-          )
-        }
+        <Photo id="portrait" class="portrait" sizes="(min-width: 64rem) 18rem, 100vw" />
         <dl>
           {
             about.facts.map((f) => (
@@ -55,10 +52,8 @@ import { about } from '../data/content';
     grid-column: 1 / -1;
     margin-top: var(--space-6);
   }
-  .photo {
-    width: 100%;
+  .facts :global(.portrait) {
     max-width: 18rem;
-    height: auto;
     margin-bottom: var(--space-5);
   }
   dl {

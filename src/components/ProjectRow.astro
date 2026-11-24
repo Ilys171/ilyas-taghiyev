@@ -1,6 +1,6 @@
 ---
 import type { Project } from '../data/content';
-import { statusLabel } from '../data/content';
+import Num from './Num.astro';
 
 interface Props {
   project: Project;
@@ -8,37 +8,28 @@ interface Props {
 }
 const { project: p, index } = Astro.props;
 const num = String(index + 1).padStart(2, '0');
-const showBadge = p.status === 'upcoming' || p.status === 'concept' || p.status === 'prototype';
 ---
 
 <article class="row grid-12" aria-labelledby={`p-${p.slug}`} data-reveal>
   <div class="when">
     <span class="num">{num}</span>
-    {p.years && <span>{p.years}</span>}
-    {
-      showBadge && (
-        <span class:list={['badge', { 'badge--accent': p.status === 'upcoming' }]}>
-          {statusLabel[p.status]}
-          {p.statusNote && <> · {p.statusNote}</>}
-        </span>
-      )
-    }
+    <span>{p.grades}</span>
   </div>
 
   <div class="main">
-    <h3 id={`p-${p.slug}`}>
+    <h3 id={`p-${p.slug}`} style={`view-transition-name:t-${p.slug}`}>
       <a href={`/projects/${p.slug}`} class="row-link">
         <span class="title">{p.title}</span>
       </a>
     </h3>
     <p class="summary">{p.summary}</p>
-    <p class="for meta"><span class="for-k">For</span> {p.audience}</p>
+    {p.audience && <p class="for meta"><span class="for-k">For</span> {p.audience}</p>}
     {
       p.facts.length > 0 && (
         <ul class="facts" aria-label="Key numbers">
-          {p.facts.map((f) => (
+          {p.facts.slice(0, 3).map((f) => (
             <li>
-              <span class="fact-v">{f.value}</span>
+              <span class="fact-v"><Num value={f.value} /></span>
               <span class="fact-l">{f.label}</span>
             </li>
           ))}

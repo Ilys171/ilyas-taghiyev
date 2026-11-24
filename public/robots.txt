@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://ilyas-taghiyev.vercel.app/sitemap-index.xml
+Sitemap: https://ilyastaghiyev.site/sitemap-index.xml

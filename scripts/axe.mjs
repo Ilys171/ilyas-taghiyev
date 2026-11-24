@@ -11,13 +11,12 @@ const browser = await chromium.launch();
 let total = 0;
 for (const scheme of ['light', 'dark']) {
   for (const width of [390, 1440]) {
-    const context = await browser.newContext({ colorScheme: scheme, viewport: { width, height: 900 } });
+    const context = await browser.newContext({ colorScheme: scheme, viewport: { width, height: 900 }, reducedMotion: 'reduce' });
     for (const path of paths) {
       const page = await context.newPage();
-      await page.goto(base + path, { waitUntil: 'networkidle' });
-      // Reveal everything so contrast is checked on the final state.
-      await page.evaluate(() => document.querySelectorAll('[data-reveal]').forEach((el) => el.classList.add('is-in')));
-      await page.waitForTimeout(2200);
+      await page.goto(base + path, { waitUntil: 'load' });
+      // Reduced motion shows every final state, so contrast is checked on what people read.
+      await page.waitForTimeout(300);
       const { violations } = await new AxeBuilder({ page })
         .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'])
         .analyze();

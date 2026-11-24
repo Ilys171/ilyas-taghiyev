@@ -1,29 +1,21 @@
 # TODO: for Ilyas to provide or confirm
 
-Everything below is marked in the code with a `TODO:` comment (search for `TODO` in `src/`). Until it is filled in, the site shows a neutral placeholder or leaves the item out. It never shows invented text.
+Source of truth: `private/Ilyas_Taghiyev_UC_Activities.pdf`. Search for `TODO` in `src/` for the matching code comments. Nothing below is invented on the live site: missing text is hidden there and shown as a dashed “Ilyas to write” box in `npm run dev`.
 
-## Needed before sharing the site widely
+## Needed
 
-| # | What | Where | Currently shown |
-|---|---|---|---|
-| 1 | **CLICK website**: https://click-alpha-give.vercel.app returned **404 Not Found** on 2026-10-31 | `content.ts` → project `click` → `links` | Link hidden |
-| 2 | **Project page texts**: “The problem” and “What we learned” for all 13 projects (2–4 sentences each, first person, facts only) | `content.ts` → each project → `detail.problem`, `detail.learned` | Dashed “Placeholder: Ilyas to write” box |
-| 3 | **Final domain** (e.g. a custom domain connected in Vercel) | `astro.config.mjs` → `site`, and `public/robots.txt` | `https://ilyas-taghiyev.vercel.app` |
+| # | What | Where |
+|---|---|---|
+| 1 | **“What I learned”**: 2–4 sentences, first person, for each of the 12 projects. This is the part of each project page that only you can write. | `src/data/content.ts` → each project → `detail.learned` |
+| 2 | **“The problem”**: 1–3 sentences for every project except Stem van Thuis (which uses the CV’s own wording). | `detail.problem` |
+| 3 | **Photos**: see `PHOTOS_NEEDED.md` (5 must-haves). | `src/assets/photos/` |
+| 4 | **CLICK website**: click-alpha-give.vercel.app returned 404 on 2026-11-24, so the link is hidden. | `content.ts` → `click` → `links` |
+| 5 | **kumihohunters.site** did not respond on 2026-11-24. The link is still shown; check that it is live. | `content.ts` → `kumiho-hunters` → `links` |
+| 6 | **Confirm “kept but not in the CV”** items (About facts, languages, IELTS, school, music-charts line). See CHANGES.md §6. | `content.ts` → `about` |
 
 ## Optional
 
-| # | What | Where | Currently shown |
-|---|---|---|---|
-| 4 | **Portrait photo** (real photo only; at least 960×1200 px, JPG). Put it in `public/` and set `about.photo` | `content.ts` → `about.photo` | No photo; the layout is complete without it |
-| 5 | **Research paper PDF**, once public | `content.ts` → `research.pdf` | “PDF available when the paper is public” |
-| 6 | **Medeniyyet TV link**, if the segment is online | `content.ts` → project `mathroutes` → `links` | Named in Recognition, no link |
-| 7 | **Years for Athena Band and Sessiz Sifaris** | `content.ts` → `years` | “Prototype” / “Concept” badge instead of years |
-
-## Already confirmed (2026-10-31)
-
-- MathRoutes age range: 5–9.
-- SoleShift Kids: 2,000+ students in workshops.
-- John Locke Institute commendation: 2026.
-- Sessiz Sifaris: described as a concept, as stated in the McDonald’s Azerbaijan letter of reference.
-- Email `ilyastagiyev1@gmail.com` is correct as written.
-- Project order: one list, from the project that best shows help for young people to the one that shows it least (reorder the `projects` array to change it).
+| # | What | Where |
+|---|---|---|
+| 7 | Medeniyyet TV link, if the segment is online | `content.ts` → `mathroutes` → `links`, and `media` |
+| 8 | Regenerate the OG image with the Galton-board symbol (`npm run og` after updating `scripts/og-image.mjs`) | `scripts/og-image.mjs` |
