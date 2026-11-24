@@ -64,6 +64,13 @@
       "skillPath": "skills/choreograph/SKILL.md",
       "computedHash": "a33a7cf57eacff502f833778eed62244fb5a890bb25124dacde73bcf8716218c"
     },
+    "cinematic-gsap-lenis-motion-system": {
+      "source": "MengTo/Skills",
+      "commit": "e7df6eb7124095d6c7fbc71c8909f8896d061850",
+      "sourceType": "github",
+      "skillPath": "agent-skills/web-design/cinematic-gsap-lenis-motion-system/SKILL.md",
+      "computedHash": "fbb714a9d82c6d34bb27f20919773897c73c9ddb3744f032c9ea484ebbfd6102"
+    },
     "emil-design-eng": {
       "source": "emilkowalski/skill",
       "commit": "64eb3deb9a5fbfa041faf783e0bc3fd635872e9c",
@@ -147,6 +154,13 @@
       "sourceType": "github",
       "skillPath": "skills/gsap-utils/SKILL.md",
       "computedHash": "d05b56284eea0118d481b8c673aff27cae66199282995bfe78315785f561002d"
+    },
+    "impeccable": {
+      "source": "pbakaus/impeccable",
+      "commit": "b49177d32788f2dc585c42831d845dacf1ebed2c",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/impeccable/SKILL.md",
+      "computedHash": "08bd5bf141cb507f46bd8347890cd985865606f15adf88295ed3a73bc9ad5d96"
     },
     "improve-animations": {
       "source": "emilkowalski/skill",

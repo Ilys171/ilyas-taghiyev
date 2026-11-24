@@ -1,15 +1,17 @@
 ---
 /** Contact: a heading in Ilyas's voice, the email, LinkedIn. */
 import { site } from '../data/content';
+import Mark from './Mark.astro';
 ---
 
 <section id="contact" class="contact" aria-labelledby="contact-title">
-  <div class="wrap inner" data-reveal>
-    <h2 id="contact-title" class="title">Every child counts. <span class="soft">Write to me.</span></h2>
-    <p class="email">
+  <Mark kind="bell" class="mark-tr mark-wide-only" />
+  <div class="wrap inner">
+    <h2 id="contact-title" class="title" data-heading>Every child counts. <span class="soft">Write to me.</span></h2>
+    <p class="email" data-reveal>
       <a class="email-link" href={`mailto:${site.email}`}>{site.email}</a>
     </p>
-    <p class="other">
+    <p class="other" data-reveal>
       <a class="button ext" href={site.linkedin} target="_blank" rel="noopener noreferrer">
         LinkedIn<span class="sr-only"> (opens in a new tab)</span>
       </a>

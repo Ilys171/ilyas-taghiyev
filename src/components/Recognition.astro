@@ -5,12 +5,14 @@
  * to, in that project's category colour. No logos, nothing from letters.
  */
 import { honors, media, projects } from '../data/content';
+import Mark from './Mark.astro';
 const bySlug = Object.fromEntries(projects.map((p) => [p.slug, p]));
 ---
 
 <section id="recognition" class="recognition" aria-labelledby="recognition-title">
   <div class="wrap">
-    <h2 id="recognition-title" class="title" data-reveal>Recognition</h2>
+    <Mark kind="regression" class="mark-tr" />
+    <h2 id="recognition-title" class="title" data-heading>Recognition</h2>
 
     <div class="cols">
       <div class="block" data-reveal>

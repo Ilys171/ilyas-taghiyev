@@ -8,6 +8,8 @@
 import { Picture } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 import { site } from '../data/content';
+import ChalkUnderline from './ChalkUnderline.astro';
+import Mark from './Mark.astro';
 const words = site.name.split(' ');
 
 // Photo of Ilyas: drop a file at src/assets/ilyas.jpg (or .jpeg/.png/.webp).
@@ -19,6 +21,8 @@ const found = Object.values(
 ---
 
 <section class="intro" id="top" aria-labelledby="hero-title">
+  <Mark kind="bell" class="m-intro-d" />
+  <Mark kind="scatter" class="m-intro-m" />
   <div class="wrap inner">
     <div class="copy">
       <h1 id="hero-title" class="name">
@@ -36,7 +40,7 @@ const found = Object.values(
         }
       </h1>
       <p class="sentence" data-intro>{site.intro}</p>
-      <p class="study" data-intro>I want to study <strong>{site.study}</strong> {site.studyWhy}</p>
+      <p class="study" data-intro>I want to study <strong><ChalkUnderline>{site.study}</ChalkUnderline></strong> {site.studyWhy}</p>
       <dl class="record" data-intro>
         <div><dt>School</dt><dd>{site.school}</dd></div>
         <div><dt>Based in</dt><dd>{site.meta[0]}</dd></div>
@@ -74,7 +78,33 @@ const found = Object.values(
 <style>
   /* The intro fills the first screen; the copy sits in its lower half and the
      cue at the bottom edge. */
+  /* Chalk marks: bell curve top-left on desktop (above the copy), scatter
+     beside the photo on phones. Never behind text. */
+  :global(.m-intro-d) {
+    display: none !important;
+  }
+  :global(.m-intro-m) {
+    top: var(--space-6);
+    right: var(--gutter);
+  }
+  /* Desktop: never the phone mark (the photo sits top right). The bell only
+     shows on screens tall enough to keep it clear of the name. */
+  @media (min-width: 64rem) {
+    :global(.m-intro-m) {
+      display: none !important;
+    }
+  }
+  @media (min-width: 64rem) and (min-height: 56rem) {
+    :global(.m-intro-d) {
+      display: block !important;
+      top: 14%;
+      left: max(var(--gutter), calc((100% - 80rem) / 2));
+      width: 13rem !important;
+    }
+  }
+
   .intro {
+    position: relative;
     min-height: calc(100svh - var(--header-h));
     display: flex;
   }
@@ -244,7 +274,8 @@ const found = Object.values(
   }
   @media (prefers-reduced-motion: no-preference) {
     .cue-dot {
-      animation: cue 2.4s var(--ease-in-out) 1.6s infinite;
+      /* three passes, then still: the hint has been given */
+      animation: cue 2.4s var(--ease-in-out) 1.6s 3 both;
     }
   }
   @keyframes cue {

@@ -67,7 +67,7 @@ const prefix = home ? '' : '/';
   </div>
 </header>
 
-<dialog id="menu" class="menu" aria-label="Menu" data-menu>
+<dialog id="menu" class="menu" aria-label="Menu" data-menu data-lenis-prevent>
   <div class="wrap menu-bar">
     <span class="brand" aria-hidden="true">{site.name}</span>
     <button type="button" class="tool" data-menu-close>Close</button>
@@ -368,7 +368,7 @@ const prefix = home ? '' : '/';
     opacity: 0;
     pointer-events: none;
     transition:
-      transform 380ms var(--ease-out),
+      transform 240ms var(--ease-out),
       opacity 200ms var(--ease-out);
   }
   .nav-dot:not(.is-on) {
@@ -437,6 +437,23 @@ const prefix = home ? '' : '/';
   .menu[open] {
     display: flex;
     flex-direction: column;
+    animation: menu-in 220ms var(--ease-out);
+  }
+  @keyframes menu-in {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .menu[open] {
+      animation-name: menu-fade;
+    }
+    @keyframes menu-fade {
+      from {
+        opacity: 0;
+      }
+    }
   }
   .menu::backdrop {
     background: var(--bg);

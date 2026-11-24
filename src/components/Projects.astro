@@ -6,14 +6,16 @@
  * is simply drawn.
  */
 import ProjectRow from './ProjectRow.astro';
+import Mark from './Mark.astro';
 import { projects, categories, moreWork, type Category } from '../data/content';
 const cats = Object.entries(categories) as [Category, { label: string }][];
 ---
 
 <section id="projects" class="projects" aria-labelledby="projects-title">
+  <Mark kind="histogram" class="mark-tr mark-mid" />
   <div class="wrap">
     <header class="intro">
-      <h2 id="projects-title" class="title">Projects</h2>
+      <h2 id="projects-title" class="title" data-heading>Projects</h2>
       <p class="lede">Seven projects, strongest first. The colour shows what each one works on.</p>
       <ul class="legend" aria-label="Categories">
         {

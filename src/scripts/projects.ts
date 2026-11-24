@@ -70,7 +70,20 @@ export function initProjects(): () => void {
     ),
   );
 
-  // 3. Hover / focus: a few dots leave the node and settle back (~0.6 s total).
+  // 2b. The project the thread is at gets its chalk underline (.is-active),
+  //     from its node reaching the pen line until the next one does.
+  const actives = gsap.utils.toArray<HTMLElement>('[data-project]').map((project) =>
+    ScrollTrigger.create({
+      trigger: project,
+      start: PEN,
+      end: 'bottom 65%',
+      toggleClass: { targets: project, className: 'is-active' },
+    }),
+  );
+
+  // 3. Mouse hover only: a few dots leave the node and settle back (~0.6 s).
+  //    Not on keyboard focus: tabbing through the list must stay calm
+  //    (focus still gets the title underline).
   const cleanups: (() => void)[] = [];
   document.querySelectorAll<HTMLElement>('[data-project]').forEach((project) => {
     const sparks = project.querySelectorAll<HTMLElement>('[data-spark]');
@@ -95,10 +108,8 @@ export function initProjects(): () => void {
       if (e.pointerType === 'mouse') burst();
     };
     project.addEventListener('pointerenter', onEnter);
-    project.addEventListener('focusin', burst);
     cleanups.push(() => {
       project.removeEventListener('pointerenter', onEnter);
-      project.removeEventListener('focusin', burst);
       tl?.kill();
     });
   });
@@ -106,6 +117,8 @@ export function initProjects(): () => void {
   return () => {
     thread.scrollTrigger?.kill();
     thread.kill();
+    actives.forEach((a) => a.kill());
+    document.querySelectorAll('[data-project].is-active').forEach((p) => p.classList.remove('is-active'));
     lights.forEach((l) => {
       l.scrollTrigger?.kill();
       l.kill();

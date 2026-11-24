@@ -1,0 +1,65 @@
+---
+/**
+ * A hand-drawn chalk underline under a word or short phrase.
+ * Motion (src/scripts/motion.ts): it draws itself from left to right once,
+ * when it scrolls into view. Transform only: the clip slides one way and
+ * the line the other, so the stroke stays still while it is revealed.
+ * Reduced motion / no JS: the line is simply there.
+ */
+interface Props {
+  /** CSS colour for the stroke; defaults to chalk. */
+  color?: string;
+}
+const { color = 'var(--chalk)' } = Astro.props;
+---
+
+<span class="cu" style={`--ul:${color}`} data-underline
+  ><slot /><span class="cu-line" aria-hidden="true"
+    ><span class="cu-clip" data-ul-clip
+      ><span class="cu-inner" data-ul-inner
+        ><svg viewBox="0 0 200 14" preserveAspectRatio="none" focusable="false"
+          ><path d="M3 9.6C38 5.4 71 11.2 108 7.6S171 4.8 197 8.4"></path></svg
+        ></span
+      ></span
+    ></span
+  ></span
+>
+
+<style>
+  .cu {
+    position: relative;
+    display: inline-block;
+    white-space: nowrap;
+  }
+  .cu-line {
+    position: absolute;
+    left: -3%;
+    right: -3%;
+    bottom: -0.14em;
+    height: 0.3em;
+    pointer-events: none;
+  }
+  .cu-clip,
+  .cu-inner {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .cu-clip {
+    overflow: hidden;
+  }
+  svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  path {
+    fill: none;
+    stroke: var(--ul);
+    stroke-width: 3px;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+    opacity: 0.9;
+  }
+</style>

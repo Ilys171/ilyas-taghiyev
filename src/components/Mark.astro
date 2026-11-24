@@ -1,0 +1,109 @@
+---
+/**
+ * A faint chalk statistics mark for the board's margins: x̄ (drawn as an x
+ * with a bar), a bell curve, a scatter cluster, a small histogram, a
+ * regression line through a scatter, or tally marks. No Greek letters.
+ * Decorative only (aria-hidden). Placed in empty title rows, never behind
+ * body text. Motion (src/scripts/motion.ts): gentle scroll parallax.
+ */
+interface Props {
+  kind: 'xbar' | 'bell' | 'scatter' | 'histogram' | 'regression' | 'tally';
+  /** Extra class for positioning from the parent. */
+  class?: string;
+}
+const { kind, class: cls } = Astro.props;
+
+// Deterministic scatter points (no randomness at build time).
+const pts = [
+  [14, 52], [22, 44], [27, 56], [33, 40], [38, 47], [44, 35], [49, 42], [55, 30],
+  [61, 37], [66, 26], [72, 33], [78, 22], [84, 29], [90, 18], [30, 30], [70, 46],
+];
+---
+
+<span class:list={['mark', `mark--${kind}`, cls]} aria-hidden="true" data-mark>
+  <svg viewBox="0 0 100 64" focusable="false">
+    {
+      kind === 'xbar' && (
+        <g>
+          <path d="M30 14h40" />
+          <path d="M34 26 66 58M66 26 34 58" />
+        </g>
+      )
+    }
+    {
+      kind === 'bell' && (
+        <g>
+          <path d="M4 56C22 56 30 54 38 34S46 8 50 8s8 6 12 26 16 22 34 22" />
+          <path d="M4 58.5h92" />
+          <path class="thin" d="M50 8v50" />
+        </g>
+      )
+    }
+    {
+      kind === 'scatter' && (
+        <g>
+          {pts.map(([x, y]) => (
+            <circle cx={x} cy={y} r="1.9" />
+          ))}
+        </g>
+      )
+    }
+    {
+      kind === 'histogram' && (
+        <g>
+          <path d="M8 58h84" />
+          <path d="M12 58V44h12v14M24 58V30h12v28M36 58V14h12v44M48 58V22h12v36M60 58V38h12v20M72 58V50h12v8" />
+        </g>
+      )
+    }
+    {
+      kind === 'regression' && (
+        <g>
+          {pts.slice(0, 14).map(([x, y]) => (
+            <circle cx={x} cy={y} r="1.9" />
+          ))}
+          <path d="M8 58 96 14" />
+        </g>
+      )
+    }
+    {
+      kind === 'tally' && (
+        <g>
+          <path d="M22 12v42M34 10v44M46 12v42M58 10v44M14 44 66 18" />
+          <path d="M80 12v42" />
+        </g>
+      )
+    }
+  </svg>
+</span>
+
+<style>
+  .mark {
+    position: absolute;
+    display: block;
+    width: clamp(5.5rem, 11vw, 11rem);
+    pointer-events: none;
+    color: var(--chalk);
+    opacity: 0.17;
+  }
+  svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+  path {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+  .thin {
+    stroke-dasharray: 2 3;
+  }
+  circle {
+    fill: currentColor;
+  }
+</style>

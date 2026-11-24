@@ -409,6 +409,64 @@ html {
 }
 
 /* ---------------------------------------------------------------
+   Board furniture: chalk marks in title rows, section dividers.
+   --------------------------------------------------------------- */
+main > section {
+  position: relative;
+}
+/* Mark in a section's empty title row, top right (never behind text). */
+.mark-tr {
+  top: calc(var(--space-8) - 0.5rem);
+  right: max(var(--gutter), calc((100% - 80rem) / 2));
+}
+@media (min-width: 64rem) {
+  .mark-tr {
+    top: calc(var(--space-9) - 0.75rem);
+  }
+  /* Projects: in the empty band above the title row, clear of the
+     legend (right) and the lede (left). */
+  .mark-mid {
+    top: var(--space-4);
+    right: 34%;
+  }
+}
+@media (max-width: 63.99rem) {
+  .mark-wide-only {
+    display: none !important;
+  }
+}
+/* Self-drawing chalk divider (motion only; added by motion.ts). The section
+   keeps its CSS border when motion is off. */
+.rule {
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--border);
+  transform-origin: left center;
+  pointer-events: none;
+}
+.has-rule {
+  border-top-color: transparent !important;
+}
+
+/* Lenis (smooth scroll; motion only) */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis:not(.lenis-autoToggle).lenis-stopped {
+  overflow: clip;
+}
+.lenis [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+/* ---------------------------------------------------------------
    Scroll reveal: hidden only while JS runs and motion is allowed.
    GSAP (src/scripts/motion.ts) reveals; `.no-motion` is the fallback.
    --------------------------------------------------------------- */

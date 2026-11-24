@@ -8,11 +8,13 @@
  * Assets are built by scripts/korczak.mjs from the private source photo.
  */
 import { site } from '../data/content';
+import ChalkUnderline from './ChalkUnderline.astro';
 import desktop from '../data/korczak-desktop.json';
 import phone from '../data/korczak-phone.json';
 // Static images are rendered by scripts/korczak.mjs at these sizes.
 const dW = desktop.w;
 const dH = desktop.h;
+const [mottoBefore, mottoAfter] = site.tagline.split('average');
 const pW = 640;
 const pH = Math.round((phone.h * 640) / phone.w);
 ---
@@ -22,7 +24,7 @@ const pH = Math.round((phone.h * 640) / phone.w);
     <canvas class="dots" aria-hidden="true" data-korczak-canvas></canvas>
     <div class="wrap stage-inner">
       <div class="about-him">
-        <h2 id="korczak-title" class="title">Janusz Korczak</h2>
+        <h2 id="korczak-title" class="title" data-heading>Janusz Korczak</h2>
         <p class="dates">1878–1942</p>
         <p class="who">
           Polish pediatrician and educator, and a pioneer of children’s rights, who treated children as equals.
@@ -53,7 +55,7 @@ const pH = Math.round((phone.h * 640) / phone.w);
       <p data-lines>“Children are not the people of tomorrow, but are people of today.”</p>
       <footer data-lines>— Janusz Korczak</footer>
     </blockquote>
-    <p class="motto" data-lines>{site.tagline}</p>
+    <p class="motto" data-lines>{mottoBefore}<ChalkUnderline color="var(--orange)">average</ChalkUnderline>{mottoAfter}</p>
     <p class="subline" data-lines>{site.lead}</p>
   </div>
 </section>
