@@ -3,9 +3,16 @@ import { site } from '../data/content';
 ---
 
 <footer class="site-footer">
-  <div class="wrap row meta">
+  <div class="wrap row">
     <p>© {site.year} {site.name}</p>
-    <p>Built with Astro</p>
+    <ul class="contact">
+      <li><a class="link" href={`mailto:${site.email}`}>{site.email}</a></li>
+      <li>
+        <a class="link ext" href={site.linkedin} target="_blank" rel="noopener noreferrer">
+          LinkedIn<span class="sr-only"> (opens in a new tab)</span>
+        </a>
+      </li>
+    </ul>
   </div>
 </footer>
 
@@ -15,9 +22,23 @@ import { site } from '../data/content';
   }
   .row {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
-    gap: var(--space-4);
+    align-items: baseline;
+    gap: var(--space-2) var(--space-5);
     padding-block: var(--space-5);
-    font-size: var(--step--2);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+  .contact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
+  }
+  .contact a {
+    display: inline-block;
+    padding-block: var(--space-2);
+    overflow-wrap: anywhere;
   }
 </style>

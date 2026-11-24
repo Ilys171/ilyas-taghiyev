@@ -7,3 +7,5 @@ qa/
 private/
 .vercel
 .env*
+.claude/settings.local.json
+.impeccable/config.local.json

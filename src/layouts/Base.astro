@@ -31,8 +31,7 @@ const ogImage = new URL('/og.png', Astro.site);
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    <meta name="theme-color" content="#f7f5f0" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#131312" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#17302b" />
 
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
@@ -53,17 +52,13 @@ const ogImage = new URL('/og.png', Astro.site);
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
 
-    <link rel="preload" href="/fonts/newsreader-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/fonts/ibm-plex-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/fraunces-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/atkinson-hyperlegible-next-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
 
     <script is:inline>
       (function () {
         var d = document.documentElement;
         d.classList.add('js');
-        try {
-          var t = localStorage.getItem('theme');
-          if (t === 'light' || t === 'dark') d.dataset.theme = t;
-        } catch (e) {}
         // Safety net: if the motion scripts fail to load, show everything.
         setTimeout(function () {
           if (!window.__motion) d.classList.add('no-motion');
@@ -85,6 +80,7 @@ const ogImage = new URL('/og.png', Astro.site);
         email: `mailto:${site.email}`,
         sameAs: [site.linkedin],
         homeLocation: { '@type': 'Place', name: 'Baku, Azerbaijan' },
+        affiliation: { '@type': 'EducationalOrganization', name: site.school },
       })}
     />
   </head>

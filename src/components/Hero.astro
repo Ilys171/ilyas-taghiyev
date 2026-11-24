@@ -1,149 +1,197 @@
 ---
-import GaltonBoard from './GaltonBoard.astro';
+/**
+ * Intro (first screen): what Ilyas wants to study, his name, one sentence,
+ * school and location, and a quiet scroll cue. Scores live in Academics.
+ * Motion (src/scripts/motion.ts): masked name reveal and staggered lines on
+ * load. The HTML always holds the final state.
+ */
 import { site } from '../data/content';
+const words = site.name.split(' ');
 ---
 
-<section class="hero" id="top" aria-labelledby="hero-title">
-  <div class="wrap">
-    <div class="grid-12 intro">
-      <p class="meta hero-meta">
+<section class="intro" id="top" aria-labelledby="hero-title">
+  <div class="wrap inner">
+    <div class="copy">
+      <p class="study" data-intro>I want to study <em>{site.study}</em></p>
+      <h1 id="hero-title" class="name">
         {
-          site.meta.map((m, i) => (
+          words.map((w, i) => (
             <>
-              {i > 0 && <span class="sep" aria-hidden="true"> · </span>}
-              <span class="nowrap">{m}</span>
+              {i > 0 && ' '}
+              <span class="mask">
+                <span class="mask-in" data-intro-word>
+                  {w}
+                </span>
+              </span>
             </>
           ))
         }
+      </h1>
+      <p class="sentence" data-intro>{site.intro}</p>
+      <p class="where" data-intro>
+        <span class="school">{site.school}</span>
+        <span class="place">{site.meta.join(' · ')}</span>
       </p>
-      <h1 id="hero-title">{site.name}</h1>
-      <div class="statement">
-        <p class="tagline">{site.tagline}</p>
-        <p class="lead pretty">{site.lead}</p>
-        <p class="actions">
-          <a class="action" href="#projects">See projects <span aria-hidden="true">↓</span></a>
-          <a class="action" href="#contact">Contact <span aria-hidden="true">↓</span></a>
-        </p>
-      </div>
-      <div class="figure">
-        <GaltonBoard />
-      </div>
+    </div>
+
+    <div class="cue-wrap" data-scroll-cue>
+      <a class="cue" href="#academics" data-intro>
+        <span class="cue-label">Scroll</span>
+        <span class="cue-line" aria-hidden="true"><span class="cue-dot"></span></span>
+      </a>
     </div>
   </div>
 </section>
 
 <style>
-  .hero {
-    padding-top: var(--space-6);
-    padding-bottom: var(--space-7);
-  }
+  /* The intro fills the first screen; the copy sits in its lower half and the
+     cue at the bottom edge. */
   .intro {
-    row-gap: var(--space-4);
+    min-height: calc(100svh - var(--header-h));
+    display: flex;
   }
-  .hero-meta,
-  h1,
-  .statement,
-  .figure {
-    grid-column: 1 / -1;
-    margin: 0;
+  .inner {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: var(--space-6);
+    padding-top: var(--space-7);
+    padding-bottom: var(--space-4);
   }
-  .nowrap {
-    white-space: nowrap;
+  .copy {
+    display: grid;
+    gap: var(--space-4);
   }
-  @media (max-width: 47.99rem) {
-    .hero-meta .nowrap {
-      display: block;
-    }
-    .hero-meta .sep {
-      display: none;
-    }
+
+  .study {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    line-height: 1.2;
+    font-weight: 380;
+    color: var(--chalk);
   }
-  h1 {
+  .study em {
+    font-style: italic;
+  }
+
+  /* Name: the largest type on the site. */
+  .name {
     font-size: var(--step-6);
     line-height: 0.95;
     letter-spacing: -0.025em;
-    font-weight: 380;
-    margin-top: var(--space-2);
+    font-weight: 360;
+    font-variation-settings: 'opsz' 144;
   }
-  .statement {
-    margin-top: var(--space-4);
+  /* Each word sits in a mask so it can rise into view (transform only).
+     Padding keeps descenders (y, g) inside the mask. */
+  .mask {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: top;
+    padding-bottom: 0.12em;
+    margin-bottom: -0.12em;
   }
-  .tagline {
-    font-family: var(--font-display);
-    font-style: italic;
-    font-size: var(--step-4);
-    line-height: 1.1;
-    letter-spacing: -0.01em;
-    margin: 0;
-    max-width: 18ch;
-    text-wrap: balance;
+  .mask-in {
+    display: inline-block;
   }
-  .lead {
-    margin: var(--space-4) 0 0;
-    max-width: 46ch;
+
+  .sentence {
+    max-width: 30ch;
     font-size: var(--step-1);
-    line-height: 1.5;
+    line-height: 1.45;
+  }
+  .where {
+    display: grid;
+    gap: var(--space-1);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    line-height: 1.45;
     color: var(--muted);
   }
-  .actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-3) var(--space-5);
-    margin: var(--space-5) 0 0;
+  .school {
+    color: var(--chalk);
   }
-  .action {
+
+  /* Scroll cue: a small label and a thin chalk line with one dot travelling
+     down it. Quiet; static with reduced motion. */
+  .cue-wrap {
+    align-self: flex-start;
+  }
+  .cue {
     display: inline-flex;
-    gap: 0.4em;
-    align-items: baseline;
-    padding-block: var(--space-2);
-    font-weight: 500;
-    border-bottom: 1px solid var(--text);
-    transition: color 200ms var(--ease-out), border-color 200ms var(--ease-out);
-  }
-  .action span {
+    align-items: center;
+    gap: var(--space-3);
+    min-height: 2.75rem;
     font-family: var(--font-mono);
-    transition: translate 200ms var(--ease-out);
+    font-size: var(--step--2);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    transition: color 200ms var(--ease-out);
   }
-  .action:hover {
-    color: var(--accent);
-    border-color: var(--accent);
+  .cue-line {
+    position: relative;
+    width: 1px;
+    height: 2.75rem;
+    overflow: hidden;
+    background: var(--border-strong);
   }
-  .action:hover span {
-    translate: 0 2px;
+  .cue-dot {
+    position: absolute;
+    left: -2px;
+    top: 0;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--chalk);
   }
-  .figure {
-    margin-top: var(--space-5);
-    max-width: 40rem;
-    width: 100%;
-    justify-self: center;
+  @media (hover: hover) {
+    .cue:hover {
+      color: var(--chalk);
+    }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .cue-dot {
+      animation: cue 2.4s var(--ease-in-out) 1.6s infinite;
+    }
+  }
+  @keyframes cue {
+    0% {
+      transform: translateY(-6px);
+      opacity: 0;
+    }
+    15% {
+      opacity: 1;
+    }
+    70% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(2.9rem);
+      opacity: 0;
+    }
   }
 
   @media (min-width: 64rem) {
-    .hero {
-      padding-top: var(--space-7);
+    .inner {
+      padding-bottom: var(--space-5);
     }
-    .hero-meta,
-    h1 {
-      grid-column: 1 / span 7;
+    .copy {
+      gap: var(--space-5);
     }
-    .statement {
-      grid-column: 1 / span 6;
-      grid-row: 3;
-      margin-top: var(--space-5);
-      align-self: start;
-    }
-    .figure {
-      grid-column: 8 / -1;
-      grid-row: 1 / span 3;
-      align-self: end;
-      margin-top: 0;
-      max-width: 34rem;
-      justify-self: end;
+    .sentence {
+      max-width: 34ch;
     }
   }
-  @media (prefers-reduced-motion: reduce) {
-    .action span {
-      transition: none;
+
+  /* Starting state for the load animation: only while JS runs and motion
+     is allowed. Without JS, or with reduced motion, everything is visible. */
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.js:not(.no-motion)) .mask-in {
+      transform: translateY(105%);
+    }
+    :global(.js:not(.no-motion)) [data-intro] {
+      opacity: 0;
     }
   }
 </style>

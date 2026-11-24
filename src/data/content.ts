@@ -63,8 +63,14 @@ export const site = {
   name: 'Ilyas Taghiyev',
   title: 'Ilyas Taghiyev — Finding the child the average hides',
   description:
-    'Ilyas Taghiyev, a student from Baku, builds learning projects for children and young people and uses statistics to find out what works for each of them.',
-  meta: ['Baku, Azerbaijan', 'Statistics & Data Science', 'Class of 2027'],
+    'Ilyas Taghiyev, a student at the Lyceum named after Academician Zarifa Aliyeva in Baku, builds learning projects for children and young people and uses statistics to find out what works for each of them.',
+  meta: ['Baku, Azerbaijan', 'Class of 2027'],
+  /** What Ilyas wants to study. */
+  study: 'Statistics & Data Science',
+  /** Official name. Use exactly this spelling everywhere. */
+  school: 'Lyceum named after Academician Zarifa Aliyeva',
+  /** One sentence about who Ilyas is (his own words from the About text). */
+  intro: 'Most of what I build is for children and young people.',
   tagline: 'Finding the child the average hides.',
   lead: 'I build learning projects for children and young people, and I use statistics to find out what works for each of them.',
   email: 'ilyastagiyev1@gmail.com',
@@ -72,7 +78,58 @@ export const site = {
   year: 2026,
 };
 
+export interface Score {
+  test: string;
+  /** Main score, exactly as supplied by Ilyas. Never recalculated. */
+  value: string;
+  date: string;
+  /** ISO year-month for <time datetime>. */
+  datetime: string;
+  parts: { label: string; value: string }[];
+  note?: string;
+}
+
+/** Exam scores, supplied by Ilyas (2026-11-24). Never change, round or recalculate. */
+export const scores: Score[] = [
+  {
+    test: 'SAT',
+    value: '1550',
+    date: 'March 2026',
+    datetime: '2026-03',
+    parts: [
+      { label: 'Evidence-Based Reading & Writing', value: '750' },
+      { label: 'Math', value: '800' },
+    ],
+  },
+  {
+    test: 'ACT',
+    value: '34',
+    date: 'June 2026',
+    datetime: '2026-06',
+    parts: [
+      { label: 'English', value: '35' },
+      { label: 'Reading', value: '32' },
+      { label: 'Math', value: '36' },
+      { label: 'Science', value: '36' },
+    ],
+    note: 'Composite: enhanced ACT average of English, Reading and Math. Science is reported separately.',
+  },
+  {
+    test: 'IELTS Academic',
+    value: '8.5',
+    date: 'July 2026',
+    datetime: '2026-07',
+    parts: [
+      { label: 'Listening', value: '9.0' },
+      { label: 'Reading', value: '9.0' },
+      { label: 'Writing', value: '7.5' },
+      { label: 'Speaking', value: '7.5' },
+    ],
+  },
+];
+
 export const nav = [
+  { href: '#academics', label: 'Academics' },
   { href: '#projects', label: 'Projects' },
   { href: '#research', label: 'Research' },
   { href: '#recognition', label: 'Recognition' },
@@ -397,11 +454,20 @@ export const research = {
   link: { label: 'Read the preprint on Zenodo', href: 'https://zenodo.org/records/24425599' },
 };
 
-export const honors = [
+/**
+ * Academic honors (Academics section). Only academic awards that are in the CV:
+ * essay competitions, olympiads, academic prizes. The CV has one.
+ */
+export const academicHonors = [
   {
     title: 'John Locke Institute Global Essay Prize: Commended',
-    note: 'Science & Technology · Grade 10. An essay on why politeness toward AI matters.',
+    meta: 'Science & Technology essay · Grade 10 · International',
+    note: 'An essay arguing that politeness toward AI matters because it rehearses habits we carry into human relationships.',
   },
+];
+
+/** Recognition of projects (Recognition section). */
+export const honors = [
   { title: 'Recognized by the Ministry of Culture of Azerbaijan', note: 'ReHand Loom' },
   { title: 'Selected by the South Korean Embassy for its event', note: 'Kumiho Hunters' },
   { title: 'Selected nationally to present on Medeniyyet TV', note: 'MathRoutes' },
@@ -418,17 +484,13 @@ export const media: { outlet: string; text: string; href?: string }[] = [
   { outlet: 'Sabah FC', text: 'The club president recommended the Athena Band team' },
 ];
 
+/**
+ * About: the facts about Ilyas live in the intro. About only says why
+ * statistics, in his own words, so it does not repeat the intro.
+ * CV facts only (2026-11-24): no languages, tools, interests or hobbies.
+ */
 export const about = {
   paragraphs: [
-    'I’m Ilyas, a student from Baku. I speak Azerbaijani, Russian, English and Turkish. Most of what I build is for children and young people: math tasks for children with ADHD, online-safety lessons for primary schools, computing and AI-literacy lessons for Roma children.',
-    'Along the way I learned that a good average can hide the children who need help most. That is why I want to study statistics and data science: to measure what actually works, and for whom.',
-    'Outside projects, I check music streaming charts every morning, because to me a table of numbers is a story waiting to be read.',
-  ],
-  // TODO: not in the CV PDF. Kept because they describe Ilyas, not achievements. Confirm or remove.
-  facts: [
-    { key: 'School', value: 'Academician Zarifa Aliyeva Lyceum, Baku', note: 'Graduating June 2027' },
-    { key: 'Languages', value: 'Azerbaijani (native), Russian, English (IELTS 8.5), Turkish (B2)' },
-    { key: 'Tools', value: 'Python, JavaScript, React, HTML, CSS' },
-    { key: 'Interests', value: 'Statistics, data science, education, inclusion' },
+    'Working on these projects, I learned that a good average can hide the children who need help most. That is why I want to study statistics and data science: to measure what actually works, and for whom.',
   ],
 };
