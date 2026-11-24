@@ -1,250 +1,244 @@
 ---
-import SectionHead from './SectionHead.astro';
+/**
+ * Research: the working paper, and its finding drawn as 100 dots
+ * (each dot = 1% of squared forecast error).
+ *   filled (77)      asset-risk surprises in every portfolio and model
+ *   orange ring (18) the range: 77–95% depending on portfolio and model
+ *   empty (5)        correlation surprises in every case
+ * Motion (src/scripts/motion.ts): the dots fill in order with scroll.
+ * Facts as in the CV and the public preprint on Zenodo.
+ */
 import { research as r } from '../data/content';
 const { low, high } = r.keyResult;
+const dots = Array.from({ length: 100 }, (_, i) => (i < low ? 'asset' : i < high ? 'range' : 'corr'));
 ---
 
-<section id="research" class="section" aria-labelledby="research-title">
+<section id="research" class="research" aria-labelledby="research-title">
   <div class="wrap">
-    <SectionHead num="02" label="Research" title="Research" id="research">
-      <p>An independent preprint in financial statistics.</p>
-    </SectionHead>
+    <h2 id="research-title" class="title" data-reveal>Research</h2>
 
-    <div class="grid-12">
-      <article class="paper" aria-labelledby="paper-title" data-reveal>
-        <p class="label kicker">{r.kicker}</p>
+    <article class="paper" aria-labelledby="paper-title">
+      <div class="paper-head" data-reveal>
         <h3 id="paper-title" class="paper-title">{r.title}</h3>
         <p class="authors">
           {
             r.authors.map((a, i) => (
               <>
                 {i > 0 && ', '}
-                <span class="author">{a}</span>
+                <span class:list={['author', { me: i === 0 }]}>{a}</span>
               </>
             ))
           }
         </p>
+        <p class="paper-meta">{r.kicker.replace(' · ', ', ')} · Zenodo</p>
+      </div>
 
-        <div class="abstract">
-          <h4 class="label">In short</h4>
-          <p class="pretty">{r.summary}</p>
-          <p class="mine"><span class="label">My part</span> {r.myPart}</p>
+      <div class="paper-body">
+        <div class="abstract" data-reveal>
+          <p class="summary">{r.summary}</p>
+          <p class="mine"><span class="mine-k">My part</span> {r.myPart}</p>
+          <p class="read">
+            <a class="button ext" href={r.link.href} target="_blank" rel="noopener noreferrer">
+              {r.link.label}<span class="sr-only"> (opens in a new tab)</span>
+            </a>
+          </p>
         </div>
 
-        <div class="result">
-          <p class="result-v">{r.keyResult.value}</p>
-          <p class="result-l">{r.keyResult.label}</p>
-        </div>
-
-        <figure class="share" data-share>
+        <figure class="finding" data-share-grid>
+          <p class="result">
+            <span class="result-v">{r.keyResult.value}</span>
+            <span class="result-l">{r.keyResult.label}</span>
+          </p>
           <div
-            class="share-track"
+            class="dots"
             role="img"
-            aria-label={`Bar from 0 to 100% of squared forecast error. Asset-risk surprises account for ${low}% to ${high}%; correlation surprises for the rest.`}
+            aria-label={`100 dots, one per 1% of squared forecast error. ${low} filled: asset-risk surprises in every portfolio and model. ${high - low} outlined: the range from ${low}% to ${high}%, depending on portfolio and model. ${100 - high} empty: correlation surprises in every case.`}
           >
-            <span class="share-fill" style={`width:${low}%`}></span>
-            <span class="share-band" style={`left:${low}%;width:${high - low}%`}></span>
-          </div>
-          <div class="share-scale" aria-hidden="true">
-            <span style="left:0">0%</span>
-            <span class="hi" style={`left:${low}%`}>{low}%</span>
-            <span class="hi" style={`left:${high}%`}>{high}%</span>
+            {dots.map((kind) => <span class={`d d--${kind}`} data-dot />)}
           </div>
           <figcaption>
-            <span class="share-note"><i class="key key-fill"></i>asset-risk surprises</span>
-            <span class="share-note"><i class="key key-band"></i>the range we found, {low}–{high}%</span>
-            <span class="share-note"><i class="key key-rest"></i>correlation surprises: the rest</span>
+            <p class="range-note">{r.keyResult.rangeNote}</p>
+            <ul class="legend">
+              <li><i class="k k--asset"></i><span><b>{low}</b> asset-risk surprises, in every case</span></li>
+              <li><i class="k k--range"></i><span><b>{high - low}</b> the range: {low}–{high}% depending on portfolio and model</span></li>
+              <li><i class="k k--corr"></i><span><b>{100 - high}</b> correlation surprises, in every case</span></li>
+            </ul>
+            <p class="unit">Each dot is 1% of squared forecast error.</p>
           </figcaption>
         </figure>
-
-        <p class="pdf meta">
-          <a class="link ext" href={r.link.href} target="_blank" rel="noopener noreferrer">
-            {r.link.label}<span class="sr-only"> (opens in a new tab)</span>
-          </a>
-        </p>
-      </article>
-    </div>
+      </div>
+    </article>
   </div>
 </section>
 
 <style>
-  .paper {
-    grid-column: 1 / -1;
-    background: var(--surface);
-    padding: var(--space-6) var(--space-4);
-    text-align: center;
+  .research {
+    padding-block: var(--space-8);
+    border-top: 1px solid var(--border);
   }
-  .kicker {
-    margin: 0;
+  .title {
+    font-size: var(--step-5);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    font-weight: 360;
+  }
+
+  /* The paper: the one raised panel on the site. */
+  .paper {
+    display: grid;
+    gap: var(--space-6);
+    margin-top: var(--space-6);
+    padding: var(--space-5) var(--space-4);
+    border-radius: var(--radius);
+    background: var(--board-raised);
+  }
+  .paper-head {
+    display: grid;
+    gap: var(--space-3);
   }
   .paper-title {
-    font-size: var(--step-4);
-    line-height: 1.12;
-    letter-spacing: -0.01em;
     max-width: 30ch;
-    margin: var(--space-4) auto 0;
+    font-size: var(--step-3);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    font-weight: 380;
   }
   .authors {
-    margin: var(--space-4) 0 0;
     font-size: var(--step--1);
     color: var(--muted);
   }
-  .author {
-    font-variant-caps: all-small-caps;
-    letter-spacing: 0.04em;
-    font-size: 1.12em;
-    color: var(--text);
+  .author.me {
+    color: var(--chalk);
+    font-weight: 600;
+  }
+  .paper-meta {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+
+  .paper-body {
+    display: grid;
+    gap: var(--space-6);
   }
   .abstract {
-    max-width: 40rem;
-    margin: var(--space-6) auto 0;
-    text-align: left;
+    display: grid;
+    gap: var(--space-4);
+    align-content: start;
   }
-  .abstract h4 {
-    margin: 0 0 var(--space-2);
-    font-family: var(--font-mono);
-    font-weight: 400;
-  }
-  .abstract p {
-    margin: 0;
+  .summary {
+    max-width: 58ch;
     font-family: var(--font-display);
     font-size: var(--step-1);
     line-height: 1.5;
-    hyphens: auto;
+    font-weight: 380;
+  }
+  .mine {
+    max-width: 58ch;
+    color: var(--muted);
+  }
+  .mine-k {
+    margin-right: 0.5em;
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--chalk);
+  }
+
+  /* The finding */
+  .finding {
+    display: grid;
+    gap: var(--space-4);
+    margin: 0;
+    align-content: start;
   }
   .result {
-    max-width: 40rem;
-    margin: var(--space-6) auto 0;
-    padding-top: var(--space-4);
-    border-top: 1px solid var(--text);
-    text-align: left;
     display: grid;
-    gap: var(--space-2);
+    gap: var(--space-1);
   }
   .result-v {
-    margin: 0;
-    font-family: var(--font-mono);
-    font-variant-numeric: tabular-nums;
+    font-family: var(--font-display);
     font-size: var(--step-5);
-    font-weight: 500;
     line-height: 1;
     letter-spacing: -0.02em;
-    color: var(--accent);
+    font-weight: 360;
+    font-variant-numeric: lining-nums tabular-nums;
+    color: var(--orange);
   }
   .result-l {
-    margin: 0;
-    max-width: 40ch;
+    max-width: 32ch;
   }
-  .abstract .mine {
-    margin: var(--space-4) 0 0;
-    hyphens: manual;
-    font-family: var(--font-sans);
-    font-size: var(--step-0);
-    color: var(--muted);
-    line-height: 1.55;
+  .dots {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: clamp(5px, 1.4vw, 9px);
+    max-width: 22rem;
   }
-  .mine .label {
-    margin-right: 0.5em;
+  .d {
+    aspect-ratio: 1;
+    border-radius: 50%;
   }
-
-  .share {
-    max-width: 40rem;
-    margin: var(--space-5) auto 0;
-    text-align: left;
+  .d--asset {
+    background: var(--chalk);
   }
-  .share-track {
-    position: relative;
-    height: 14px;
-    background: var(--bg);
-    box-shadow: inset 0 0 0 1px var(--border);
-    overflow: hidden;
+  .d--range {
+    box-shadow: inset 0 0 0 2px var(--orange);
   }
-  .share-fill,
-  .share-band {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
+  .d--corr {
+    box-shadow: inset 0 0 0 1.5px rgb(242 237 227 / 0.35);
   }
-  .share-fill {
-    background: var(--accent);
+  .range-note {
+    max-width: 44ch;
+    font-size: var(--step--1);
+    color: var(--chalk);
   }
-  .share-band {
-    background: repeating-linear-gradient(-45deg, var(--accent) 0 2px, transparent 2px 6px);
-  }
-  .share-scale {
-    position: relative;
-    height: 1.5em;
-    margin-top: var(--space-1);
-    font-family: var(--font-mono);
-    font-size: 12px;
+  .legend {
+    display: grid;
+    gap: var(--space-2);
+    font-size: var(--step--1);
     color: var(--muted);
   }
-  .share-scale span {
-    position: absolute;
-    top: 0;
-    translate: -50% 0;
-  }
-  .share-scale span:first-child {
-    translate: 0 0;
-  }
-  .share-scale .hi {
-    color: var(--text);
-  }
-  .share-scale .hi:last-child {
-    translate: -60% 0;
-  }
-  .share figcaption {
+  .legend li {
     display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-1) var(--space-4);
-    margin-top: var(--space-2);
+    gap: 0.7em;
+    align-items: baseline;
+  }
+  .legend b {
+    font-weight: 600;
+    color: var(--chalk);
+    font-variant-numeric: tabular-nums;
+  }
+  .k {
+    flex-shrink: 0;
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 50%;
+    transform: translateY(0.1em);
+  }
+  .k--asset {
+    background: var(--chalk);
+  }
+  .k--range {
+    box-shadow: inset 0 0 0 2px var(--orange);
+  }
+  .k--corr {
+    box-shadow: inset 0 0 0 1.5px rgb(242 237 227 / 0.45);
+  }
+  .unit {
     font-family: var(--font-mono);
     font-size: var(--step--2);
     color: var(--muted);
   }
-  .share-note {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5em;
-  }
-  .key {
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-  }
-  .key-fill {
-    background: var(--accent);
-  }
-  .key-band {
-    background: repeating-linear-gradient(-45deg, var(--accent) 0 2px, transparent 2px 5px);
-    box-shadow: inset 0 0 0 1px var(--accent);
-  }
-  .key-rest {
-    box-shadow: inset 0 0 0 1px var(--border);
-    background: var(--bg);
-  }
-  .pdf {
-    max-width: 40rem;
-    margin: var(--space-5) auto 0;
-    text-align: left;
-    font-size: var(--step--2);
-  }
 
-
-  @media (min-width: 48rem) {
-    .paper {
-      padding: var(--space-8) var(--space-7);
-    }
-    .result {
-      grid-template-columns: auto 1fr;
-      align-items: end;
-      gap: var(--space-5);
-    }
-  }
   @media (min-width: 64rem) {
+    .research {
+      padding-block: var(--space-9);
+    }
     .paper {
-      grid-column: 4 / -1;
+      padding: var(--space-7);
+    }
+    .paper-body {
+      grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+      column-gap: var(--space-7);
     }
   }
 </style>

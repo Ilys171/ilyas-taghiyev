@@ -12,19 +12,19 @@ Approved 2026-11-24. Replaces the earlier paper-and-ink design (light/dark) enti
 
 ## 2. Colors (one theme only)
 
-No light/dark switching. The single theme is the chalkboard.
+No light/dark switching. The single theme is the chalkboard. **No Greek letters anywhere** (decorations, marks, favicon, share image): statistics marks are x̄, a bell curve, a scatter cluster, a small histogram, a regression line and tally marks.
 
-| Token | Hex | Role | Contrast on board |
-|---|---|---|---|
-| `--board` | `#17302B` | page background | n/a |
-| `--board-raised` | `#1D3A34` | the one raised panel (research paper) | n/a |
-| `--chalk` | `#F2EDE3` | text, portrait dots, lines | 12.05 : 1 |
-| `--chalk-muted` | `#A9B8B2` | secondary text, meta | 6.82 : 1 |
-| `--orange` | `#F08A3C` | **learning** category; the hidden-child dot; text selection | 5.63 : 1 |
-| `--sky` | `#6CC3E6` | **health** category | 7.09 : 1 |
-| `--yellow` | `#F4C84A` | **communities & accessibility** category; focus ring | 8.84 : 1 |
+| Token | Hex | Role | Contrast on board | on raised |
+|---|---|---|---|---|
+| `--board` | `#1F2238` | page background: **slate indigo**, a dark chalkboard with a violet undertone | n/a | n/a |
+| `--board-raised` | `#272B45` | raised panels (research paper, menus) | n/a | n/a |
+| `--chalk` | `#F2EDE3` | text, portrait dots, lines | 13.39 : 1 | 11.86 : 1 |
+| `--chalk-muted` | `#AEB0C9` | secondary text, meta (lavender-grey, tuned to the indigo) | 7.33 : 1 | 6.49 : 1 |
+| `--orange` | `#F08A3C` | **learning** category; the hidden-child dot; text selection | 6.25 : 1 | 5.54 : 1 |
+| `--sky` | `#6CC3E6` | **health** category | 7.88 : 1 | 6.97 : 1 |
+| `--yellow` | `#F4C84A` | **communities & accessibility** category; focus ring | 9.83 : 1 | 8.70 : 1 |
 
-Hairlines are chalk at 16% alpha (`--border`), stronger rules at 42% (`--border-strong`). All text pairs pass WCAG AA; the accents also pass as text. Accents are crayons: they mark categories and the one hidden dot, never large fills.
+Hairlines are chalk at 16% alpha (`--border`), stronger rules at 42% (`--border-strong`). Every text and accent colour passes WCAG AA on both the board and raised panels (all ≥ 5.5 : 1). Accents are crayons: they mark categories and the one hidden dot, never large fills. The favicon, share image (public/og.png) and theme-color use the same board colour; the Korczak static images are transparent and sit on whatever board is behind them.
 
 **Chalk dust:** a 2.5 KB static tile (public/images/chalk.webp) repeated over the board at very low alpha. It never animates.
 
@@ -49,15 +49,16 @@ Scale (fluid 360 → 1440px, tokens in src/styles/global.css): `--step--2` 12.5�
 
 ## 5. Page order and components
 
-1. **Intro**: name; studying Statistics & Data Science; one sentence; three score chips (SAT, ACT, IELTS) with dates and sub-scores exactly as supplied; “Baku, Azerbaijan · Class of 2027”.
-2. **My symbol: Janusz Korczak**: pinned scene; dots assemble into the halftone portrait; one orange dot on the chest; then quote, motto, subline. Static image for reduced motion / no JS. Alt: “Portrait of Janusz Korczak, 1927”.
-3. **Projects** (exactly 7, in order: MathRoutes, Kumiho Hunters, The Youth Collective, SoleShift Kids, ReHand Loom, Sessiz Sifaris, Athena Band). Each: category colour, title, grades as in the CV, one sentence, 2–3 CV facts, link buttons (↗ icon, new tab). A chalk thread connects them. Each has a restyled detail page; URLs of removed projects redirect to /#projects.
-4. **Research**: the paper, plus a 100-dot grid: 77 filled, 78–95 outlined orange (the range across portfolios and models), the rest = correlation surprises.
-5. **Recognition**: honors and media coverage only.
-6. **About** (CV facts only) and **Contact** (email + LinkedIn).
-7. **Footer**: “© 2026 Ilyas Taghiyev” + email + LinkedIn. No tool or framework credits.
+1. **Intro** (first screen, a calling card): name; who Ilyas is and what he does; “I want to study Statistics & Data Science …”; a small record (School · Based in · Graduating) instead of a dotted eyebrow; a 4:5 photo slot (src/assets/ilyas.jpg, soft board/chalk duotone, alt “Ilyas Taghiyev”; a chalk-outlined placeholder until it exists); quiet scroll cue.
+2. **Janusz Korczak**: pinned scene; dots assemble into the halftone portrait (as large as the screen allows); one orange dot on the chest; then quote, motto, subline line by line. Static image for reduced motion / no JS. Alt: “Portrait of Janusz Korczak, 1927”. No Greek letters, no law or justice imagery.
+3. **Projects** (exactly 7, strongest first, children first: MathRoutes, Kumiho Hunters, SoleShift Kids, The Youth Collective, ReHand Loom, Sessiz Sifaris, Athena Band). Category colour, title, grades as in the CV, one sentence, 2–3 CV facts, link buttons (↗, new tab). A chalk thread connects the nodes. Detail page per project; removed project URLs redirect to /#projects. Below: “More work with children” (CV projects without a website; name, grades, one sentence).
+4. **Research**: the paper panel plus a 100-dot grid (1 dot = 1% of squared forecast error): 77 filled, 18 orange rings (the 77–95% range across portfolios and models), 5 empty (correlation surprises).
+5. **Recognition**: not a timeline. Honors and selections as statements tagged with their project; media coverage as link cards. Nothing from recommendation letters.
+6. **Academics**: SAT, ACT, IELTS (exactly as supplied) and academic honors from the CV.
+7. **Contact**: “Every child counts. Write to me.”, email, LinkedIn.
+8. **Footer**: “© 2026 Ilyas Taghiyev” + email + LinkedIn. No tool or framework credits, no monogram anywhere.
 
-Navigation follows page order; Projects opens a compact index of the 7 (desktop dropdown, inside the menu on phones). The current section is marked while scrolling.
+Navigation follows page order (Projects, Research, Recognition, Academics, Contact); Projects opens a compact index of the 7 (desktop dropdown, inside the menu on phones). Sections without a nav item clear the highlight.
 
 ## 6. Motion
 

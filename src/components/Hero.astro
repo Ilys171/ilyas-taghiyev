@@ -5,8 +5,17 @@
  * Motion (src/scripts/motion.ts): masked name reveal and staggered lines on
  * load. The HTML always holds the final state.
  */
+import { Picture } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
 import { site } from '../data/content';
 const words = site.name.split(' ');
+
+// Photo of Ilyas: drop a file at src/assets/ilyas.jpg (or .jpeg/.png/.webp).
+// Astro turns it into responsive AVIF/WebP and strips camera metadata.
+// Until the file exists, a quiet chalk-outlined placeholder is shown.
+const found = Object.values(
+  import.meta.glob<{ default: ImageMetadata }>('/src/assets/ilyas.{jpg,jpeg,png,webp}', { eager: true }),
+)[0]?.default;
 ---
 
 <section class="intro" id="top" aria-labelledby="hero-title">
@@ -28,11 +37,30 @@ const words = site.name.split(' ');
       </h1>
       <p class="sentence" data-intro>{site.intro}</p>
       <p class="study" data-intro>I want to study <strong>{site.study}</strong> {site.studyWhy}</p>
-      <p class="where" data-intro>
-        <span class="school">{site.school}</span>
-        <span class="place">{site.meta.join(' · ')}</span>
-      </p>
+      <dl class="record" data-intro>
+        <div><dt>School</dt><dd>{site.school}</dd></div>
+        <div><dt>Based in</dt><dd>{site.meta[0]}</dd></div>
+        <div><dt>Graduating</dt><dd>{site.meta[1]}</dd></div>
+      </dl>
     </div>
+
+    <figure class:list={['photo', { 'photo--empty': !found }]} data-intro>
+      {
+        found ? (
+          <Picture
+            src={found}
+            alt="Ilyas Taghiyev"
+            formats={['avif', 'webp']}
+            widths={[360, 540, 720, 960, 1200].filter((w) => w <= found.width)}
+            sizes="(min-width: 64rem) 26vw, 46vw"
+            loading="eager"
+            fetchpriority="high"
+          />
+        ) : (
+          <span class="photo-label" aria-hidden="true">Photo</span>
+        )
+      }
+    </figure>
 
     <div class="cue-wrap" data-scroll-cue>
       <a class="cue" href="#korczak" data-intro>
@@ -54,13 +82,13 @@ const words = site.name.split(' ');
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    gap: var(--space-6);
-    padding-top: var(--space-7);
-    padding-bottom: var(--space-4);
+    gap: var(--space-5);
+    padding-top: var(--space-5);
+    padding-bottom: var(--space-3);
   }
   .copy {
     display: grid;
-    gap: var(--space-4);
+    gap: var(--space-3);
   }
 
   /* Name: the largest type on the site. */
@@ -102,20 +130,82 @@ const words = site.name.split(' ');
   .study strong {
     font-weight: 600;
   }
-  .where {
+  /* School, city, class: a small record, not a dotted eyebrow line. */
+  .record {
     display: grid;
-    gap: var(--space-1);
-    font-family: var(--font-mono);
+    gap: 0;
+    max-width: 34rem;
     font-size: var(--step--1);
-    line-height: 1.45;
+    line-height: 1.4;
+  }
+  .record div {
+    display: grid;
+    grid-template-columns: 6.5rem minmax(0, 1fr);
+    gap: var(--space-3);
+    padding-block: 0.45rem;
+    border-top: 1px solid var(--border);
+  }
+  .record dt {
+    font-family: var(--font-mono);
     color: var(--muted);
   }
-  .school {
+  .record dd {
     color: var(--chalk);
   }
 
-  /* Scroll cue: a small label and a thin chalk line with one dot travelling
-     down it. Quiet; static with reduced motion. */
+  /* Photo of Ilyas: 4:5, lightly graded towards the board colours (a soft
+     duotone: shadows lift to the board colour, highlights warm to chalk). Until the
+     photo exists, a chalk-outlined frame with a faint label. */
+  .photo {
+    order: -1;
+    position: relative;
+    width: min(34%, 8.5rem);
+    aspect-ratio: 4 / 5;
+    margin: 0;
+    border-radius: var(--radius);
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .photo :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 30%;
+    filter: grayscale(1) contrast(1.06);
+  }
+  .photo:not(.photo--empty)::before,
+  .photo:not(.photo--empty)::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+  /* highlights -> chalk (multiply), shadows -> board colour (screen) */
+  .photo:not(.photo--empty)::before {
+    background: var(--chalk);
+    mix-blend-mode: multiply;
+  }
+  .photo:not(.photo--empty)::after {
+    background: var(--board);
+    mix-blend-mode: screen;
+    opacity: 0.85;
+  }
+  .photo--empty {
+    display: grid;
+    place-items: center;
+    border: 1.5px solid rgb(242 237 227 / 0.32);
+    background: rgb(242 237 227 / 0.025);
+  }
+  .photo-label {
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgb(242 237 227 / 0.4);
+  }
+
   .cue-wrap {
     align-self: flex-start;
   }
@@ -174,13 +264,35 @@ const words = site.name.split(' ');
     }
   }
 
+  /* Phone: photo first (small, left), then the copy, then the cue. */
+  .inner {
+    display: grid;
+    align-content: end;
+  }
+
   @media (min-width: 64rem) {
     .inner {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: var(--space-4);
+      align-items: end;
       padding-bottom: var(--space-5);
     }
     .copy {
+      grid-column: 1 / span 7;
+      grid-row: 1;
       gap: var(--space-5);
     }
+    .photo {
+      grid-column: 9 / -1;
+      grid-row: 1;
+      width: min(100%, calc(60svh * 0.8));
+      justify-self: end;
+    }
+    .cue-wrap {
+      grid-column: 1 / -1;
+      grid-row: 2;
+    }
+  }
   }
 
   /* Starting state for the load animation: only while JS runs and motion

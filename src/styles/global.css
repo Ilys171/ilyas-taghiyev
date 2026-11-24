@@ -80,10 +80,10 @@
   color-scheme: dark;
 
   /* Chalk & Data palette */
-  --board: #17302b;
-  --board-raised: #1d3a34;
+  --board: #1f2238; /* slate indigo */
+  --board-raised: #272b45;
   --chalk: #f2ede3;
-  --chalk-muted: #a9b8b2;
+  --chalk-muted: #aeb0c9;
   --orange: #f08a3c; /* learning */
   --sky: #6cc3e6; /* health */
   --yellow: #f4c84a; /* communities & accessibility */

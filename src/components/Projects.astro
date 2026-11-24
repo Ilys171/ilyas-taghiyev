@@ -6,7 +6,7 @@
  * is simply drawn.
  */
 import ProjectRow from './ProjectRow.astro';
-import { projects, categories, type Category } from '../data/content';
+import { projects, categories, moreWork, type Category } from '../data/content';
 const cats = Object.entries(categories) as [Category, { label: string }][];
 ---
 
@@ -14,7 +14,7 @@ const cats = Object.entries(categories) as [Category, { label: string }][];
   <div class="wrap">
     <header class="intro">
       <h2 id="projects-title" class="title">Projects</h2>
-      <p class="lede">Seven projects, grouped by what they work on.</p>
+      <p class="lede">Seven projects, strongest first. The colour shows what each one works on.</p>
       <ul class="legend" aria-label="Categories">
         {
           cats.map(([key, c]) => (
@@ -36,6 +36,21 @@ const cats = Object.entries(categories) as [Category, { label: string }][];
         {projects.map((project) => <ProjectRow project={project} />)}
       </ol>
     </div>
+
+    <section class="more" aria-labelledby="more-title" data-reveal>
+      <h3 id="more-title" class="more-title">More work with children</h3>
+      <ul class="more-list">
+        {
+          moreWork.map((w) => (
+            <li>
+              <p class="more-name">{w.title}</p>
+              <p class="more-grades">{w.grades}</p>
+              <p class="more-summary">{w.summary}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
   </div>
 </section>
 
@@ -117,6 +132,42 @@ const cats = Object.entries(categories) as [Category, { label: string }][];
     border-top: 1px solid var(--border);
   }
 
+  /* Compact list under the seven: no links, no pages. */
+  .more {
+    display: grid;
+    gap: var(--space-3);
+    margin-top: var(--space-6);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--border-strong);
+  }
+  .more-title {
+    font-size: var(--step-2);
+    font-weight: 380;
+  }
+  .more-list {
+    display: grid;
+  }
+  .more-list li {
+    display: grid;
+    gap: var(--space-1);
+    padding-block: var(--space-3);
+    border-bottom: 1px solid var(--border);
+  }
+  .more-name {
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    line-height: 1.25;
+  }
+  .more-grades {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+  .more-summary {
+    max-width: 62ch;
+    color: var(--chalk);
+  }
+
   @media (min-width: 64rem) {
     .projects {
       padding-block: var(--space-9) var(--space-7);
@@ -140,6 +191,33 @@ const cats = Object.entries(categories) as [Category, { label: string }][];
     }
     .thread {
       left: calc(3rem / 2 - 1px);
+    }
+    .more {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: var(--space-4);
+      margin-left: calc(3rem + var(--space-4));
+    }
+    .more-title {
+      grid-column: 1 / span 4;
+      padding-top: var(--space-3);
+    }
+    .more-list {
+      grid-column: 5 / -1;
+    }
+    .more-list li {
+      grid-template-columns: minmax(0, 1fr) auto;
+      column-gap: var(--space-4);
+    }
+    .more-name {
+      grid-column: 1;
+    }
+    .more-grades {
+      grid-column: 2;
+      grid-row: 1;
+      align-self: baseline;
+    }
+    .more-summary {
+      grid-column: 1 / -1;
     }
   }
 </style>

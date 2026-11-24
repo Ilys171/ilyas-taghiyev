@@ -164,8 +164,9 @@ const press = {
 } satisfies Record<string, ExternalLink>;
 
 /**
- * The 7 projects on the site, in Ilyas's order (2026-11-24). Grouped by
- * category: learning (1–3), health (4), communities & accessibility (5–7).
+ * The 7 projects on the site, in Ilyas's order (2026-11-24, revised): the
+ * strongest first, work with children first. Category colours: learning,
+ * health, communities & accessibility.
  * Removed on purpose: Numbers Club, Science Club, Stem van Thuis, CLICK,
  * School Voice, LoomLock, WolbaCaspian, Azerbaijan Children’s Foundation.
  * Their old URLs redirect to /#projects (astro.config.mjs).
@@ -226,27 +227,6 @@ export const projects: Project[] = [
     },
   },
   {
-    slug: 'youth-collective',
-    title: 'The Youth Collective',
-    category: 'learning',
-    summary: 'Data-literacy and AI-ethics workshops where children test everyday claims with evidence.',
-    audience: 'Children in Azerbaijan',
-    grades: 'Grades 9–11',
-    time: `3${nb}hr/wk · 30${nb}wk/yr`,
-    role: 'Co-founder · Children’s Affairs Ambassador',
-    facts: [
-      { value: '400+', label: 'children so far' },
-      { value: 'Ecology, sports, health', label: 'where the claims come from' },
-      { value: 'AI tools', label: 'used critically, not blindly' },
-    ],
-    links: [{ label: 'youth-collective.com', href: 'https://youth-collective.com', kind: 'website' }],
-    detail: {
-      builtTitle: 'What I run',
-      built:
-        'A youth-led initiative in Azerbaijan where children explore ecology, sports and health through workshops and community projects. I lead its work for children: in data-literacy and AI-ethics workshops, children collect observations, test popular claims with examples from ecology, sports and health, and learn to use AI tools critically, not blindly.',
-    },
-  },
-  {
     slug: 'soleshift-kids',
     title: 'SoleShift Kids',
     category: 'health',
@@ -269,6 +249,27 @@ export const projects: Project[] = [
       measuredTitle: 'Results',
       measured:
         'I helped screen 473 children in 8 schools. Our team arranged 276 specialist reviews and provided 173 free insoles.',
+    },
+  },
+  {
+    slug: 'youth-collective',
+    title: 'The Youth Collective',
+    category: 'learning',
+    summary: 'Data-literacy and AI-ethics workshops where children test everyday claims with evidence.',
+    audience: 'Children in Azerbaijan',
+    grades: 'Grades 9–11',
+    time: `3${nb}hr/wk · 30${nb}wk/yr`,
+    role: 'Co-founder · Children’s Affairs Ambassador',
+    facts: [
+      { value: '400+', label: 'children so far' },
+      { value: 'Ecology, sports, health', label: 'where the claims come from' },
+      { value: 'AI tools', label: 'used critically, not blindly' },
+    ],
+    links: [{ label: 'youth-collective.com', href: 'https://youth-collective.com', kind: 'website' }],
+    detail: {
+      builtTitle: 'What I run',
+      built:
+        'A youth-led initiative in Azerbaijan where children explore ecology, sports and health through workshops and community projects. I lead its work for children: in data-literacy and AI-ethics workshops, children collect observations, test popular claims with examples from ecology, sports and health, and learn to use AI tools critically, not blindly.',
     },
   },
   {
@@ -342,6 +343,27 @@ export const projects: Project[] = [
   },
 ];
 
+/**
+ * “More work with children”: child-related CV projects without a website,
+ * shown as a compact list (no links, no pages, no facts beyond one sentence).
+ * Only projects that are in the CV. Numbers Club, Science Club and School
+ * Voice are not in the CV, so they are not listed.
+ */
+export const moreWork: { title: string; grades: string; summary: string }[] = [
+  {
+    title: 'Stem van Thuis',
+    grades: 'Grades 10–11',
+    summary:
+      'A picture-card system that helps toddlers in Dutch daycares express basic needs before they learn Dutch, with QR codes that play a parent’s recorded voice.',
+  },
+  {
+    title: 'CLICK: Children Rewrite the Instructions',
+    grades: 'Grade 11',
+    summary:
+      'An online pilot, started at the invitation of the Romanian Embassy in Azerbaijan, that helps Roma children in Romania build digital independence through computing, English and AI-literacy tutorials.',
+  },
+];
+
 export const research = {
   kicker: 'Preprint · November 2026',
   title:
@@ -356,6 +378,8 @@ export const research = {
     high: 95,
     value: '77–95%',
     label: 'of squared forecast error came from asset-risk surprises',
+    /** It is a range, not one number: it varies by portfolio and model. */
+    rangeNote: 'The share varies by portfolio and model: it is a range across the 11 portfolios and 3 risk models, not a single number.',
   },
   link: { label: 'Read the preprint on Zenodo', href: 'https://zenodo.org/records/24425599' },
 };
@@ -372,20 +396,22 @@ export const academicHonors = [
   },
 ];
 
-/** Recognition of projects (Recognition section). */
-export const honors = [
-  { title: 'Recognized by the Ministry of Culture of Azerbaijan', note: 'ReHand Loom' },
-  { title: 'Selected by the South Korean Embassy for its event', note: 'Kumiho Hunters' },
-  { title: 'Selected nationally to present on Medeniyyet TV', note: 'MathRoutes' },
+/**
+ * Recognition of projects (Recognition section). Honors and selections, then
+ * public media coverage. No dates (not a timeline), no logos, and nothing
+ * from recommendation letters. Each item names the project it belongs to.
+ */
+export const honors: { title: string; project: string }[] = [
+  { title: 'Selected nationally to present MathRoutes on Medeniyyet TV', project: 'mathroutes' },
+  { title: 'Selected by the South Korean Embassy for its event', project: 'kumiho-hunters' },
+  { title: 'Showcased at the National Carpet Museum', project: 'rehand-loom' },
+  { title: 'Recognized by the Ministry of Culture of Azerbaijan', project: 'rehand-loom' },
 ];
 
-/** No dates and no logos, by design. */
-export const media: { outlet: string; text: string; href?: string }[] = [
-  { outlet: 'Medeniyyet TV', text: 'MathRoutes presented on national television' },
-  { outlet: 'AZERTAC', text: 'Kumiho Hunters at the South Korean Embassy', href: press.kumihoAzertac.href },
-  { outlet: 'Uzbekistan News Gazette', text: 'Kumiho Hunters', href: press.kumihoGazette.href },
-  { outlet: 'AZERTAC', text: 'ReHand Loom smart glove', href: press.rehandAzertac.href },
-  { outlet: 'Azerbaijan Medical University', text: 'SoleShift Kids', href: press.soleshiftAmu.href },
-  { outlet: 'National Carpet Museum', text: 'ReHand Loom showcased' },
+/** Public media coverage with a link. */
+export const media: { outlet: string; text: string; href: string; project: string }[] = [
+  { outlet: 'AZERTAC', text: 'Kumiho Hunters at the South Korean Embassy', href: press.kumihoAzertac.href, project: 'kumiho-hunters' },
+  { outlet: 'Uzbekistan News Gazette', text: 'Kumiho Hunters at the South Korean Embassy', href: press.kumihoGazette.href, project: 'kumiho-hunters' },
+  { outlet: 'AZERTAC', text: 'ReHand Loom smart glove', href: press.rehandAzertac.href, project: 'rehand-loom' },
+  { outlet: 'Azerbaijan Medical University', text: 'SoleShift Kids', href: press.soleshiftAmu.href, project: 'soleshift-kids' },
 ];
-

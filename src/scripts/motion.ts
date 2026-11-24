@@ -113,14 +113,20 @@ mm.add('(prefers-reduced-motion: no-preference)', () => {
     });
   });
 
-  // 3. Research: the share of error from asset-risk surprises fills in as you scroll.
-  const share = document.querySelector<HTMLElement>('[data-share]');
-  if (share) {
-    gsap
-      .timeline({ scrollTrigger: { trigger: share, start: 'top 88%', end: 'top 45%', scrub: 0.6 } })
-      .from(share.querySelector('.share-fill'), { scaleX: 0, transformOrigin: '0 50%', ease: 'none', duration: 1 })
-      .from(share.querySelector('.share-band'), { scaleX: 0, opacity: 0, transformOrigin: '0 50%', duration: 0.5 })
-      .from(share.querySelectorAll('.share-note'), { opacity: 0, y: 6, stagger: 0.15, duration: 0.4 }, '<');
+  // 3. Research: the 100 dots fill in order as you scroll (each = 1%).
+  const grid = document.querySelector<HTMLElement>('[data-share-grid]');
+  if (grid) {
+    gsap.fromTo(
+      grid.querySelectorAll('[data-dot]'),
+      { scale: 0.35, opacity: 0.15 },
+      {
+        scale: 1,
+        opacity: 1,
+        ease: 'none',
+        stagger: { each: 0.02 },
+        scrollTrigger: { trigger: grid, start: 'top 80%', end: 'bottom 55%', scrub: 0.5 },
+      },
+    );
   }
 
   return () => {
