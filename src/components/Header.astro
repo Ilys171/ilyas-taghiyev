@@ -84,12 +84,12 @@ const prefix = home ? '' : '/';
   menu.querySelector('[data-menu-close]')!.addEventListener('click', () => menu.close());
   menu.querySelectorAll('[data-menu-link]').forEach((a) => a.addEventListener('click', () => menu.close()));
 
-  // Mark the section currently in view.
+  // Mark the section currently in view. Every top-level section is watched,
+  // so sections without a nav item (intro, Korczak) clear the highlight
+  // instead of leaving the previous item marked.
   const links = document.querySelectorAll<HTMLAnchorElement>('[data-nav]');
-  const sections = [...links]
-    .map((a) => document.getElementById(a.dataset.nav!))
-    .filter((s): s is HTMLElement => !!s);
-  if (sections.length) {
+  const sections = [...document.querySelectorAll<HTMLElement>('main > section[id]')];
+  if (links.length && sections.length) {
     const io = new IntersectionObserver(
       (entries) => {
         for (const e of entries) {

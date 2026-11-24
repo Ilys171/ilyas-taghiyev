@@ -1,0 +1,243 @@
+---
+/**
+ * My symbol: Janusz Korczak. A halftone portrait made of chalk dots.
+ * With motion: the stage pins and scattered dots assemble into the portrait
+ * with scroll (src/scripts/korczak.ts), one dot turns orange, then the quote,
+ * motto and subline reveal line by line.
+ * Reduced motion or no JS: the finished portrait (static image) and all text.
+ * Assets are built by scripts/korczak.mjs from the private source photo.
+ */
+import { site } from '../data/content';
+import desktop from '../data/korczak-desktop.json';
+import phone from '../data/korczak-phone.json';
+// Static images are rendered by scripts/korczak.mjs at these sizes.
+const dW = desktop.w;
+const dH = desktop.h;
+const pW = 640;
+const pH = Math.round((phone.h * 640) / phone.w);
+---
+
+<section id="korczak" class="korczak" aria-labelledby="korczak-title">
+  <div class="stage" data-korczak-stage>
+    <canvas class="dots" aria-hidden="true" data-korczak-canvas></canvas>
+    <div class="wrap stage-inner">
+      <div class="about-him">
+        <h2 id="korczak-title" class="title">Janusz Korczak</h2>
+        <p class="dates">1878–1942</p>
+        <p class="who">
+          Polish pediatrician and educator, and a pioneer of children’s rights, who treated children as equals.
+        </p>
+        <p class="idea">Every project on this site starts from his idea: a child is a person today, not someday.</p>
+      </div>
+      <figure class="portrait" data-korczak-frame>
+        <picture>
+          <source media="(max-width: 47.99rem)" srcset="/images/korczak-640.webp" width={pW} height={pH} />
+          <img
+            src="/images/korczak.webp"
+            width={dW}
+            height={dH}
+            alt="Portrait of Janusz Korczak, 1927"
+            loading="lazy"
+            decoding="async"
+          />
+        </picture>
+      </figure>
+      <p class="caption">
+        Dot portrait after a photograph from 1927. <span class="orange">The orange dot</span> is the child the average hides.
+      </p>
+    </div>
+  </div>
+
+  <div class="wrap words">
+    <blockquote class="quote">
+      <p data-lines>“Children are not the people of tomorrow, but are people of today.”</p>
+      <footer data-lines>— Janusz Korczak</footer>
+    </blockquote>
+    <p class="motto" data-lines>{site.tagline}</p>
+    <p class="subline" data-lines>{site.lead}</p>
+  </div>
+</section>
+
+<style>
+  .korczak {
+    border-top: 1px solid var(--border);
+  }
+
+  /* The stage is one screen tall; it is what pins while the dots assemble. */
+  .stage {
+    position: relative;
+    height: 100svh;
+    min-height: 34rem;
+    padding-top: var(--header-h);
+    overflow: hidden;
+  }
+  .dots {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+  /* Phone: text, then the portrait as wide as the screen, then the caption. */
+  .stage-inner {
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding-block: var(--space-4) var(--space-3);
+  }
+
+  .about-him {
+    display: grid;
+    gap: var(--space-2);
+    max-width: 30rem;
+  }
+  .title {
+    font-size: var(--step-4);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    font-weight: 360;
+  }
+  .dates {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+  .who,
+  .idea {
+    font-size: var(--step--1);
+    line-height: 1.5;
+    color: var(--muted);
+  }
+  .idea {
+    color: var(--chalk);
+    text-wrap: pretty;
+  }
+  @media (max-width: 47.99rem) {
+    .who {
+      display: none;
+    }
+  }
+
+  /* The portrait: as large as the stage allows (object-fit: contain). */
+  .portrait {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    margin: 0 calc(-1 * var(--gutter));
+  }
+  .portrait picture,
+  .portrait img {
+    width: 100%;
+    height: 100%;
+  }
+  .portrait img {
+    object-fit: contain;
+    object-position: center;
+  }
+  /* While the canvas draws the portrait, the static image stays hidden. */
+  :global(.korczak-live) .portrait img {
+    visibility: hidden;
+  }
+  .caption {
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    line-height: 1.5;
+    color: var(--muted);
+    max-width: 44ch;
+  }
+  .orange {
+    color: var(--orange);
+  }
+
+  /* After the stage: the quote, the motto, the subline. */
+  .words {
+    display: grid;
+    gap: var(--space-7);
+    padding-block: var(--space-8) var(--space-9);
+  }
+  .quote {
+    margin: 0;
+    display: grid;
+    gap: var(--space-3);
+    max-width: 34ch;
+  }
+  .quote p {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--step-3);
+    line-height: 1.2;
+    font-weight: 360;
+    text-wrap: balance;
+  }
+  .quote footer {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+  .motto {
+    max-width: 16ch;
+    font-family: var(--font-display);
+    font-size: var(--step-6);
+    line-height: 0.98;
+    letter-spacing: -0.025em;
+    font-weight: 360;
+    font-variation-settings: 'opsz' 144;
+    text-wrap: balance;
+  }
+  .subline {
+    max-width: 40ch;
+    font-size: var(--step-1);
+    line-height: 1.5;
+  }
+
+  /* Desktop: text and caption on the left; the portrait fills the rest of
+     the screen, close to full viewport height. */
+  @media (min-width: 64rem) {
+    .stage-inner {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      grid-template-rows: 1fr auto;
+      column-gap: var(--space-4);
+      padding-block: var(--space-3);
+    }
+    .about-him {
+      grid-column: 1 / span 4;
+      grid-row: 1;
+      align-self: center;
+      gap: var(--space-3);
+    }
+    .who,
+    .idea {
+      font-size: var(--step-0);
+    }
+    .idea {
+      font-family: var(--font-display);
+      font-size: var(--step-2);
+      line-height: 1.3;
+      font-weight: 360;
+      margin-top: var(--space-3);
+    }
+    .portrait {
+      grid-column: 5 / -1;
+      grid-row: 1 / span 2;
+      height: 100%;
+      margin: 0;
+    }
+    .caption {
+      grid-column: 1 / span 4;
+      grid-row: 2;
+      align-self: end;
+    }
+    .words {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: var(--space-4);
+    }
+    .quote,
+    .motto,
+    .subline {
+      grid-column: 3 / -1;
+    }
+  }
+</style>

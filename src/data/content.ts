@@ -67,6 +67,8 @@ export const site = {
   meta: ['Baku, Azerbaijan', 'Class of 2027'],
   /** What Ilyas wants to study. */
   study: 'Statistics & Data Science',
+  /** Why (his own words, merged from the former About section). */
+  studyWhy: 'to measure what actually works, and for whom.',
   /** Official name. Use exactly this spelling everywhere. */
   school: 'Lyceum named after Academician Zarifa Aliyeva',
   /** One sentence about who Ilyas is (his own words from the About text). */
@@ -129,11 +131,10 @@ export const scores: Score[] = [
 ];
 
 export const nav = [
-  { href: '#academics', label: 'Academics' },
   { href: '#projects', label: 'Projects' },
   { href: '#research', label: 'Research' },
   { href: '#recognition', label: 'Recognition' },
-  { href: '#about', label: 'About' },
+  { href: '#academics', label: 'Academics' },
   { href: '#contact', label: 'Contact' },
 ];
 
@@ -484,13 +485,3 @@ export const media: { outlet: string; text: string; href?: string }[] = [
   { outlet: 'Sabah FC', text: 'The club president recommended the Athena Band team' },
 ];
 
-/**
- * About: the facts about Ilyas live in the intro. About only says why
- * statistics, in his own words, so it does not repeat the intro.
- * CV facts only (2026-11-24): no languages, tools, interests or hobbies.
- */
-export const about = {
-  paragraphs: [
-    'Working on these projects, I learned that a good average can hide the children who need help most. That is why I want to study statistics and data science: to measure what actually works, and for whom.',
-  ],
-};

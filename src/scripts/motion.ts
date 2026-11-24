@@ -5,6 +5,7 @@
  */
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { initKorczak } from './korczak';
 
 gsap.registerPlugin(ScrollTrigger);
 (window as unknown as { __motion?: boolean }).__motion = true;
@@ -66,6 +67,10 @@ mm.add('(prefers-reduced-motion: no-preference)', () => {
     });
   });
 
+  // 0c. Korczak scene (pinned). Created here, before the reveals below,
+  //     so ScrollTriggers are created in page order.
+  const killKorczak = initKorczak();
+
   // 1. Reveal: short rise + fade, staggered in the order things enter.
   const items = gsap.utils.toArray<HTMLElement>('[data-reveal]');
   gsap.set(items, { opacity: 0, y: 14 });
@@ -112,5 +117,8 @@ mm.add('(prefers-reduced-motion: no-preference)', () => {
       .from(share.querySelectorAll('.share-note'), { opacity: 0, y: 6, stagger: 0.15, duration: 0.4 }, '<');
   }
 
-  return () => document.removeEventListener('focusin', onFocus);
+  return () => {
+    document.removeEventListener('focusin', onFocus);
+    killKorczak();
+  };
 });

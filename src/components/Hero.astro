@@ -1,7 +1,7 @@
 ---
 /**
- * Intro (first screen): what Ilyas wants to study, his name, one sentence,
- * school and location, and a quiet scroll cue. Scores live in Academics.
+ * Intro (first screen), a calling card: name, who Ilyas is and what he does,
+ * what he wants to study and why, school and location, a quiet scroll cue.
  * Motion (src/scripts/motion.ts): masked name reveal and staggered lines on
  * load. The HTML always holds the final state.
  */
@@ -12,7 +12,6 @@ const words = site.name.split(' ');
 <section class="intro" id="top" aria-labelledby="hero-title">
   <div class="wrap inner">
     <div class="copy">
-      <p class="study" data-intro>I want to study <em>{site.study}</em></p>
       <h1 id="hero-title" class="name">
         {
           words.map((w, i) => (
@@ -28,6 +27,7 @@ const words = site.name.split(' ');
         }
       </h1>
       <p class="sentence" data-intro>{site.intro}</p>
+      <p class="study" data-intro>I want to study <strong>{site.study}</strong> {site.studyWhy}</p>
       <p class="where" data-intro>
         <span class="school">{site.school}</span>
         <span class="place">{site.meta.join(' · ')}</span>
@@ -35,7 +35,7 @@ const words = site.name.split(' ');
     </div>
 
     <div class="cue-wrap" data-scroll-cue>
-      <a class="cue" href="#academics" data-intro>
+      <a class="cue" href="#korczak" data-intro>
         <span class="cue-label">Scroll</span>
         <span class="cue-line" aria-hidden="true"><span class="cue-dot"></span></span>
       </a>
@@ -63,17 +63,6 @@ const words = site.name.split(' ');
     gap: var(--space-4);
   }
 
-  .study {
-    font-family: var(--font-display);
-    font-size: var(--step-2);
-    line-height: 1.2;
-    font-weight: 380;
-    color: var(--chalk);
-  }
-  .study em {
-    font-style: italic;
-  }
-
   /* Name: the largest type on the site. */
   .name {
     font-size: var(--step-6);
@@ -95,10 +84,23 @@ const words = site.name.split(' ');
     display: inline-block;
   }
 
+  /* Who Ilyas is: the main statement, in the display face. */
   .sentence {
-    max-width: 30ch;
+    max-width: 22ch;
+    font-family: var(--font-display);
+    font-size: var(--step-3);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    font-weight: 360;
+  }
+  .study {
+    max-width: 40ch;
     font-size: var(--step-1);
     line-height: 1.45;
+    color: var(--chalk);
+  }
+  .study strong {
+    font-weight: 600;
   }
   .where {
     display: grid;
@@ -178,9 +180,6 @@ const words = site.name.split(' ');
     }
     .copy {
       gap: var(--space-5);
-    }
-    .sentence {
-      max-width: 34ch;
     }
   }
 
