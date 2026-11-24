@@ -1,254 +1,270 @@
 ---
-import type { Project } from '../data/content';
+/**
+ * One project on the home page: a node on the chalk thread, then category and
+ * grades, title, one sentence, 2–3 facts from the CV, and link buttons.
+ * Hover / keyboard focus (src/scripts/projects.ts): a few dots leave the node
+ * in the category colour and settle back; the title gets a chalk underline.
+ */
+import { categories, type Project } from '../data/content';
 import Num from './Num.astro';
 
 interface Props {
   project: Project;
-  index: number;
 }
-const { project: p, index } = Astro.props;
-const num = String(index + 1).padStart(2, '0');
+const { project: p } = Astro.props;
+const isNumber = (v: string) => /^\d/.test(v);
 ---
 
-<article class="row grid-12" aria-labelledby={`p-${p.slug}`} data-reveal>
-  <div class="when">
-    <span class="num">{num}</span>
-    <span>{p.grades}</span>
+<li class="project" id={p.slug} data-cat={p.category} data-project>
+  <div class="rail" aria-hidden="true">
+    <span class="node" data-node>
+      {Array.from({ length: 6 }, () => <span class="spark" data-spark />)}
+    </span>
   </div>
 
-  <div class="main">
-    <h3 id={`p-${p.slug}`} style={`view-transition-name:t-${p.slug}`}>
-      <a href={`/projects/${p.slug}`} class="row-link">
-        <span class="title">{p.title}</span>
-      </a>
-    </h3>
-    <p class="summary">{p.summary}</p>
-    {p.audience && <p class="for meta"><span class="for-k">For</span> {p.audience}</p>}
-    {
-      p.facts.length > 0 && (
-        <ul class="facts" aria-label="Key numbers">
-          {p.facts.slice(0, 3).map((f) => (
-            <li>
-              <span class="fact-v"><Num value={f.value} /></span>
-              <span class="fact-l">{f.label}</span>
-            </li>
-          ))}
-        </ul>
-      )
-    }
-  </div>
+  <article class="body" aria-labelledby={`p-${p.slug}`} data-reveal>
+    <div class="head">
+      <p class="meta-line">
+        <span class="cat">{categories[p.category].label}</span>
+        <span class="grades">{p.grades}</span>
+      </p>
+      <h3 id={`p-${p.slug}`} class="title">
+        <a href={`/projects/${p.slug}`} style={`view-transition-name:t-${p.slug}`}>
+          <span class="title-text">{p.title}</span>
+        </a>
+      </h3>
+      <p class="summary">{p.summary}</p>
+    </div>
 
-  <div class="side">
-    <p class="role">{p.role}</p>
-    {
-      p.links.length > 0 && (
-        <ul class="links">
-          {p.links.map((l) => (
-            <li>
-              <a class="link ext" href={l.href} target="_blank" rel="noopener noreferrer">
-                {l.kind === 'website' ? 'Website' : l.label}
-                <span class="sr-only"> (opens in a new tab)</span>
-              </a>
-            </li>
-          ))}
-        </ul>
-      )
-    }
-  </div>
+    <ul class="facts" aria-label="Key facts">
+      {
+        p.facts.map((f) => (
+          <li class:list={['fact', { 'fact--text': !isNumber(f.value) }]}>
+            <span class="fact-v">{isNumber(f.value) ? <Num value={f.value} /> : f.value}</span>
+            <span class="fact-l">{f.label}</span>
+          </li>
+        ))
+      }
+    </ul>
 
-  <span class="arrow" aria-hidden="true">→</span>
-</article>
+    <ul class="links" aria-label={`${p.title} links`}>
+      <li>
+        <a class="button" href={`/projects/${p.slug}`}>
+          Project details
+          <svg class="arrow" viewBox="0 0 12 12" aria-hidden="true">
+            <path
+              d="M1.5 6h8.5M7 2.5 10.5 6 7 9.5"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"></path>
+          </svg>
+        </a>
+      </li>
+      {
+        p.links.map((l) => (
+          <li>
+            <a class="button ext" href={l.href} target="_blank" rel="noopener noreferrer">
+              {l.kind === 'website' ? 'Website' : l.label}
+              <span class="sr-only">{l.kind === 'website' ? ` ${l.label}` : ''} (opens in a new tab)</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </article>
+</li>
 
 <style>
-  .row {
+  .project {
+    --cat: var(--cat-learning);
+    --button-accent: var(--cat);
     position: relative;
-    row-gap: var(--space-3);
-    padding-block: var(--space-5);
-    border-top: 1px solid var(--border);
-  }
-  .row::before {
-    /* the single data point that marks the row you are on */
-    content: '';
-    position: absolute;
-    left: calc(-1 * min(var(--space-4), var(--gutter) - 6px));
-    top: calc(var(--space-5) + 0.85em);
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: var(--accent);
-    opacity: 0;
-    transition: opacity 200ms var(--ease-out);
-  }
-  .when {
-    grid-column: 1 / -1;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--space-2) var(--space-3);
-    font-family: var(--font-mono);
-    font-variant-numeric: tabular-nums;
-    font-size: var(--step--1);
-    color: var(--muted);
-  }
-  .num {
-    color: var(--text);
-  }
-  .main,
-  .side {
-    grid-column: 1 / -1;
-  }
-  h3 {
-    margin: 0;
-    font-size: var(--step-3);
-    line-height: 1.1;
-    letter-spacing: -0.01em;
-    padding-right: var(--space-6);
-  }
-  .title {
-    background-image: linear-gradient(var(--accent), var(--accent));
-    background-repeat: no-repeat;
-    background-position: 0 100%;
-    background-size: 0% 1px;
-    transition: background-size 250ms var(--ease-out), color 200ms var(--ease-out);
-  }
-  .row-link::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-  }
-  .row-link:focus-visible {
-    outline: none;
-  }
-  .row:has(.row-link:focus-visible) {
-    outline: 2px solid var(--accent);
-    outline-offset: 4px;
-  }
-  .summary {
-    margin: var(--space-2) 0 0;
-    font-size: var(--step-0);
-    max-width: 52ch;
-  }
-  .for {
-    margin: var(--space-2) 0 0;
-    font-size: var(--step--2);
-  }
-  .for-k {
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin-right: 0.5em;
-  }
-  .facts {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--space-3);
-    list-style: none;
-    margin: var(--space-4) 0 0;
-    padding: 0;
+    grid-template-columns: 2.25rem minmax(0, 1fr);
+    column-gap: var(--space-3);
+    padding-block: var(--space-6);
   }
-  .facts li {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    padding-top: var(--space-2);
-    border-top: 1px solid var(--text);
-    font-family: var(--font-mono);
-    font-variant-numeric: tabular-nums;
+  .project[data-cat='health'] {
+    --cat: var(--cat-health);
   }
-  .fact-v {
-    font-size: var(--step-0);
-    font-weight: 500;
-    line-height: 1.2;
-  }
-  .fact-l {
-    font-size: var(--step--2);
-    color: var(--muted);
-    line-height: 1.35;
-  }
-  .role {
-    margin: 0;
-    font-size: var(--step--1);
-    color: var(--muted);
-    line-height: 1.45;
-  }
-  .links {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-1) var(--space-4);
-    list-style: none;
-    margin: var(--space-2) 0 0;
-    padding: 0;
-    font-size: var(--step--1);
-  }
-  .links a {
-    display: inline-block;
-    padding-block: var(--space-1);
-  }
-  .arrow {
-    position: absolute;
-    right: 0;
-    top: var(--space-5);
-    font-family: var(--font-mono);
-    font-size: var(--step-2);
-    line-height: 1;
-    color: var(--muted);
-    transition: translate 200ms var(--ease-out), color 200ms var(--ease-out);
+  .project[data-cat='community'] {
+    --cat: var(--cat-community);
   }
 
-  .row:hover .title,
-  .row:has(.row-link:focus-visible) .title {
-    background-size: 100% 1px;
+  /* Node on the thread */
+  .rail {
+    position: relative;
   }
-  .row:hover .arrow,
-  .row:has(.row-link:focus-visible) .arrow {
-    translate: 4px 0;
-    color: var(--accent);
+  .node {
+    position: absolute;
+    top: 0.35rem;
+    left: 50%;
+    width: 0.9rem;
+    height: 0.9rem;
+    margin-left: -0.45rem;
+    border-radius: 50%;
+    background: var(--cat);
+    box-shadow: 0 0 0 5px var(--bg);
   }
-  .row:hover::before {
-    opacity: 1;
+  .spark {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 5px;
+    height: 5px;
+    margin: -2.5px 0 0 -2.5px;
+    border-radius: 50%;
+    background: var(--cat);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .body {
+    display: grid;
+    gap: var(--space-4);
+    min-width: 0;
+  }
+  .head {
+    display: grid;
+    gap: var(--space-2);
+  }
+  .meta-line {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-3);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    line-height: 1.4;
+    color: var(--muted);
+  }
+  .cat {
+    color: var(--cat);
+  }
+  .title {
+    font-size: var(--step-4);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    font-weight: 380;
+  }
+  .title a {
+    display: inline-block;
+  }
+  /* Chalk underline in the category colour, drawn from the left on hover/focus. */
+  .title-text {
+    position: relative;
+  }
+  .title-text::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -0.08em;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--cat);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 260ms var(--ease-out);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .project:hover .title-text::after {
+      transform: scaleX(1);
+    }
+  }
+  .project:focus-within .title-text::after {
+    transform: scaleX(1);
+  }
+  .title a:focus-visible {
+    outline-offset: 6px;
+  }
+  .summary {
+    max-width: 46ch;
+    font-size: var(--step-1);
+    line-height: 1.45;
+  }
+
+  /* Facts: one row each, value then label (same on every screen size). */
+  .facts {
+    display: grid;
+  }
+  .fact {
+    display: grid;
+    grid-template-columns: minmax(5.5rem, max-content) minmax(0, 1fr);
+    align-items: baseline;
+    column-gap: var(--space-3);
+    row-gap: var(--space-1);
+    padding-block: var(--space-2);
+    border-top: 1px solid var(--border-strong);
+  }
+  .fact--text {
+    grid-template-columns: 1fr;
+  }
+  .fact-v {
+    font-family: var(--font-display);
+    font-size: var(--step-3);
+    font-weight: 360;
+    line-height: 1.05;
+    letter-spacing: -0.015em;
+    font-variant-numeric: lining-nums tabular-nums;
+  }
+  .fact--text .fact-v {
+    font-size: var(--step-1);
+    line-height: 1.2;
+    letter-spacing: 0;
+  }
+  .fact-l {
+    font-size: var(--step--1);
+    line-height: 1.4;
+    color: var(--muted);
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
   }
 
   @media (min-width: 64rem) {
-    .when {
-      grid-column: 1 / span 3;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: var(--space-2);
-      padding-top: 0.55em;
+    .project {
+      grid-template-columns: 3rem minmax(0, 1fr);
+      column-gap: var(--space-4);
+      padding-block: var(--space-7);
     }
-    .main {
-      grid-column: 4 / span 6;
+    .node {
+      top: 0.6rem;
     }
-    .side {
-      grid-column: 10 / span 3;
-      padding-top: 0.55em;
-      padding-right: var(--space-6);
+    .body {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      grid-template-areas:
+        'head facts'
+        'links facts';
+      column-gap: var(--space-6);
+      row-gap: var(--space-5);
+      align-items: start;
     }
-    .arrow {
-      top: calc(var(--space-5) + 0.2em);
+    .head {
+      grid-area: head;
     }
     .facts {
-      display: flex;
-      flex-wrap: wrap;
-      gap: var(--space-3) var(--space-5);
+      grid-area: facts;
+      grid-template-columns: 1fr;
+      padding-top: 2.2rem;
     }
-    .facts li {
-      min-width: 7rem;
-      max-width: 14rem;
+    .fact {
+      grid-template-columns: minmax(7.5rem, max-content) minmax(0, 1fr);
     }
-    .fact-v {
-      font-size: var(--step-1);
+    .fact--text {
+      grid-template-columns: 1fr;
     }
-    h3 {
-      padding-right: 0;
+    .links {
+      grid-area: links;
     }
   }
+
   @media (prefers-reduced-motion: reduce) {
-    .title,
-    .arrow,
-    .row::before {
+    .title-text::after {
       transition: none;
     }
   }

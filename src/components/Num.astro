@@ -2,7 +2,8 @@
 /**
  * A key number. Values of 10 or more count up when they scroll into view
  * (src/scripts/motion.ts); screen readers always get the exact value.
- * The text is the value exactly as written in content.ts.
+ * An invisible copy of the final number reserves its exact width, so the
+ * count-up never shifts the layout. The text is exactly as in content.ts.
  */
 interface Props {
   value: string;
@@ -17,7 +18,13 @@ const counts = m && n >= 10;
   counts ? (
     <>
       <span aria-hidden="true">
-        <span data-count={n} style={`min-width:${m![1].length}ch`}>{m![1]}</span>{m![2]}
+        <span class="num-box">
+          <span class="num-ghost">{m![1]}</span>
+          <span class="num-live" data-count={n}>
+            {m![1]}
+          </span>
+        </span>
+        {m![2]}
       </span>
       <span class="sr-only">{value}</span>
     </>
@@ -25,3 +32,18 @@ const counts = m && n >= 10;
     value
   )
 }
+
+<style>
+  .num-box {
+    position: relative;
+    display: inline-block;
+  }
+  .num-ghost {
+    visibility: hidden;
+  }
+  .num-live {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+</style>

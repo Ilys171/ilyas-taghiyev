@@ -1,0 +1,145 @@
+---
+/**
+ * Projects: the 7 projects in Ilyas's order, joined by one calm chalk thread
+ * that draws itself with scroll (src/scripts/projects.ts). Each project's node
+ * carries its category colour. Without JS or with reduced motion the thread
+ * is simply drawn.
+ */
+import ProjectRow from './ProjectRow.astro';
+import { projects, categories, type Category } from '../data/content';
+const cats = Object.entries(categories) as [Category, { label: string }][];
+---
+
+<section id="projects" class="projects" aria-labelledby="projects-title">
+  <div class="wrap">
+    <header class="intro">
+      <h2 id="projects-title" class="title">Projects</h2>
+      <p class="lede">Seven projects, grouped by what they work on.</p>
+      <ul class="legend" aria-label="Categories">
+        {
+          cats.map(([key, c]) => (
+            <li data-cat={key}>
+              <span class="dot" aria-hidden="true" />
+              {c.label}
+            </li>
+          ))
+        }
+      </ul>
+    </header>
+
+    <div class="list-wrap">
+      <div class="thread" aria-hidden="true" data-thread>
+        <span class="thread-base"></span>
+        <span class="thread-draw" data-thread-draw></span>
+      </div>
+      <ol class="list" data-thread-list>
+        {projects.map((project) => <ProjectRow project={project} />)}
+      </ol>
+    </div>
+  </div>
+</section>
+
+<style>
+  .projects {
+    padding-block: var(--space-8) var(--space-6);
+    border-top: 1px solid var(--border);
+  }
+  .intro {
+    display: grid;
+    gap: var(--space-3);
+    margin-bottom: var(--space-5);
+  }
+  .title {
+    font-size: var(--step-5);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    font-weight: 360;
+  }
+  .lede {
+    font-size: var(--step-1);
+    color: var(--muted);
+  }
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+  }
+  .legend li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6em;
+  }
+  .legend .dot {
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 50%;
+    background: var(--cat-learning);
+  }
+  .legend [data-cat='health'] .dot {
+    background: var(--cat-health);
+  }
+  .legend [data-cat='community'] .dot {
+    background: var(--cat-community);
+  }
+
+  /* The thread runs down the rail, through every node. Its top and height are
+     set from the node positions by projects.ts; this is the no-JS fallback. */
+  .list-wrap {
+    position: relative;
+  }
+  .thread {
+    position: absolute;
+    left: calc(2.25rem / 2 - 1px);
+    top: var(--thread-top, 3.5rem);
+    height: var(--thread-h, calc(100% - 7rem));
+    width: 2px;
+    pointer-events: none;
+  }
+  .thread-base,
+  .thread-draw {
+    position: absolute;
+    inset: 0;
+    border-radius: 2px;
+  }
+  .thread-base {
+    background: rgb(242 237 227 / 0.12);
+  }
+  .thread-draw {
+    background: rgb(242 237 227 / 0.62);
+    transform-origin: top center;
+  }
+  .list {
+    position: relative;
+  }
+  .list > :global(li + li) {
+    border-top: 1px solid var(--border);
+  }
+
+  @media (min-width: 64rem) {
+    .projects {
+      padding-block: var(--space-9) var(--space-7);
+    }
+    .intro {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: end;
+      column-gap: var(--space-6);
+    }
+    .title {
+      grid-column: 1;
+    }
+    .lede {
+      grid-column: 1;
+    }
+    .legend {
+      grid-column: 2;
+      grid-row: 1 / span 2;
+      flex-direction: column;
+      align-self: end;
+    }
+    .thread {
+      left: calc(3rem / 2 - 1px);
+    }
+  }
+</style>

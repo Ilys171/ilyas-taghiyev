@@ -88,6 +88,11 @@
   --sky: #6cc3e6; /* health */
   --yellow: #f4c84a; /* communities & accessibility */
 
+  /* Project categories (crayons) */
+  --cat-learning: var(--orange);
+  --cat-health: var(--sky);
+  --cat-community: var(--yellow);
+
   /* Roles (components use these) */
   --bg: var(--board);
   --surface: var(--board-raised);
@@ -306,6 +311,57 @@ html {
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M3.5 2.5h6v6M9.5 2.5l-7 7' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
 }
 
+/* Link buttons: prominent, quiet until touched. External ones add the ↗ icon
+   via .ext. They press in slightly on click. */
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  min-height: 2.75rem;
+  padding: 0 1.1rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  font-family: var(--font-sans);
+  font-size: var(--step--1);
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--chalk);
+  background: rgb(242 237 227 / 0.02);
+  transition:
+    transform 160ms var(--ease-out),
+    border-color 200ms var(--ease-out),
+    background-color 200ms var(--ease-out);
+}
+.button .arrow {
+  width: 0.8em;
+  height: 0.8em;
+  transition: transform 200ms var(--ease-out);
+}
+.button:active {
+  transform: scale(0.97);
+}
+@media (hover: hover) and (pointer: fine) {
+  .button:hover {
+    border-color: var(--button-accent, var(--chalk));
+    background: rgb(242 237 227 / 0.07);
+  }
+  .button:hover .arrow {
+    transform: translateX(3px);
+  }
+}
+.button.ext::after {
+  margin-left: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .button,
+  .button .arrow {
+    transition: border-color 200ms, background-color 200ms;
+  }
+  .button:active {
+    transform: none;
+  }
+}
+
 .section {
   padding-block: var(--space-8);
   border-top: 1px solid var(--border);
@@ -365,7 +421,6 @@ html {
 /* Count-up numbers: fixed width so nothing shifts while counting. */
 [data-count] {
   display: inline-block;
-  text-align: right;
 }
 
 /* ---------------------------------------------------------------

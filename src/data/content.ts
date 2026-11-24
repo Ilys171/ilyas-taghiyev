@@ -6,8 +6,7 @@
  * - Every fact, number, title and role must appear in the CV. Nothing else.
  * - Typography: curly quotes “ ” ’, en dash – for ranges, and a
  *   non-breaking space ( ) between a number and its unit.
- * - A missing detail section is hidden on the live site and shown as a
- *   dashed “Ilyas to write” box in `npm run dev`. See TODO.md.
+ * - A missing detail section is simply not shown.
  */
 
 export type LinkKind = 'website' | 'press' | 'paper';
@@ -25,35 +24,38 @@ export interface Fact {
   label: string;
 }
 
+export type Category = 'learning' | 'health' | 'community';
+
+/** Category names. Colours are tokens in global.css (--cat-*). */
+export const categories: Record<Category, { label: string }> = {
+  learning: { label: 'Learning' },
+  health: { label: 'Health' },
+  community: { label: 'Communities & accessibility' },
+};
+
 export interface Project {
   slug: string;
   title: string;
-  /** One line under the title in the list. */
+  category: Category;
+  /** One strong sentence: what it is. */
   summary: string;
-  /** Who the project is for; shown as “For: …”. */
+  /** Who the project is for; shown as “For” on the project page. */
   audience?: string;
-  /** School grades during which Ilyas worked on it, as in the CV. */
+  /** School grades during which Ilyas worked on it, as in the CV (no years). */
   grades: string;
   /** Time commitment, as in the CV. */
   time: string;
   role: string;
-  /** Shown in the list (first three) and on the project page (all). */
+  /** 2–3 key facts, exactly as in the CV. Non-number facts where the CV has no numbers. */
   facts: Fact[];
   recognition?: string[];
   links: ExternalLink[];
-  /** Photo slot id (see src/data/photos.ts). */
-  photo?: string;
-  /**
-   * The project page tells one story: problem → built → measured → learned.
-   * Text here only restates the CV. Missing parts are for Ilyas to write.
-   */
+  /** Project page story. Text only restates the CV. */
   detail: {
-    problem?: string;
     built?: string;
     builtTitle?: string;
     measured?: string;
     measuredTitle?: string;
-    learned?: string;
   };
 }
 
@@ -162,14 +164,19 @@ const press = {
 } satisfies Record<string, ExternalLink>;
 
 /**
- * Projects, in order: from the one that works most directly with children
- * and young people to the one that does least. Reorder to reorder the site.
+ * The 7 projects on the site, in Ilyas's order (2026-11-24). Grouped by
+ * category: learning (1–3), health (4), communities & accessibility (5–7).
+ * Removed on purpose: Numbers Club, Science Club, Stem van Thuis, CLICK,
+ * School Voice, LoomLock, WolbaCaspian, Azerbaijan Children’s Foundation.
+ * Their old URLs redirect to /#projects (astro.config.mjs).
+ * Nothing from recommendation letters appears here.
  */
 export const projects: Project[] = [
   {
     slug: 'mathroutes',
     title: 'MathRoutes',
-    summary: 'A free, hands-on math program for children with ADHD.',
+    category: 'learning',
+    summary: 'A free, hands-on math program for children with ADHD, aged 5–9.',
     audience: `Children aged 5–9 with${nb}ADHD`,
     grades: 'Grades 10–11',
     time: `6${nb}hr/wk · 32${nb}wk/yr`,
@@ -181,7 +188,6 @@ export const projects: Project[] = [
     ],
     recognition: ['Selected nationally to present MathRoutes on Medeniyyet TV'],
     links: [{ label: 'mathroutes.vercel.app', href: 'https://mathroutes.vercel.app', kind: 'website' }],
-    photo: 'mathroutes',
     detail: {
       built:
         'A free math program for children with ADHD, ages 5–9. Children explore math through drawing, cutting and building. They create sequences with their own rules and challenge classmates to figure them out, practicing mathematical reasoning through play. I drew on Math-U-See and Beast Academy to create the hands-on tasks.',
@@ -193,7 +199,8 @@ export const projects: Project[] = [
   {
     slug: 'kumiho-hunters',
     title: 'Kumiho Hunters',
-    summary: 'Online-safety lessons for primary-school children.',
+    category: 'learning',
+    summary: 'Online-safety lessons that teach primary-school children to spot scams and ask an adult before clicking.',
     audience: 'Primary-school children',
     grades: 'Grades 10–11',
     time: `5${nb}hr/wk · 21${nb}wk/yr`,
@@ -204,25 +211,46 @@ export const projects: Project[] = [
       { value: '21', label: 'weeks' },
     ],
     recognition: ['Selected by the South Korean Embassy for its event'],
-    // TODO: kumihohunters.site did not respond on 2026-11-24. Check it is live.
     links: [
       { label: 'kumihohunters.site', href: 'https://kumihohunters.site', kind: 'website' },
       press.kumihoAzertac,
       press.kumihoGazette,
     ],
-    photo: 'kumiho-hunters',
     detail: {
       builtTitle: 'What we built',
       built:
         'A student-led cybersecurity education program. Over 21 weeks it teaches primary-school children to recognize online scams, protect their passwords and personal data, and ask an adult for help before clicking. It reached 450 children in 18 schools.',
+      measuredTitle: 'What I measured',
       measured:
         'I analyzed the pre- and post-test scores. Using Hake’s normalized gain, I assessed progress relative to the improvement that was still possible, and identified the classes that needed a new approach.',
     },
   },
   {
+    slug: 'youth-collective',
+    title: 'The Youth Collective',
+    category: 'learning',
+    summary: 'Data-literacy and AI-ethics workshops where children test everyday claims with evidence.',
+    audience: 'Children in Azerbaijan',
+    grades: 'Grades 9–11',
+    time: `3${nb}hr/wk · 30${nb}wk/yr`,
+    role: 'Co-founder · Children’s Affairs Ambassador',
+    facts: [
+      { value: '400+', label: 'children so far' },
+      { value: 'Ecology, sports, health', label: 'where the claims come from' },
+      { value: 'AI tools', label: 'used critically, not blindly' },
+    ],
+    links: [{ label: 'youth-collective.com', href: 'https://youth-collective.com', kind: 'website' }],
+    detail: {
+      builtTitle: 'What I run',
+      built:
+        'A youth-led initiative in Azerbaijan where children explore ecology, sports and health through workshops and community projects. I lead its work for children: in data-literacy and AI-ethics workshops, children collect observations, test popular claims with examples from ecology, sports and health, and learn to use AI tools critically, not blindly.',
+    },
+  },
+  {
     slug: 'soleshift-kids',
     title: 'SoleShift Kids',
-    summary: 'Foot screening and follow-up care for rural schoolchildren.',
+    category: 'health',
+    summary: 'Foot screening and follow-up care for rural schoolchildren, supervised by an orthopedic surgeon.',
     audience: 'Rural schoolchildren',
     grades: 'Grades 9–11',
     time: `9${nb}hr/wk · 24${nb}wk/yr`,
@@ -231,12 +259,9 @@ export const projects: Project[] = [
       { value: '473', label: 'children screened' },
       { value: '276', label: 'specialist reviews arranged' },
       { value: '173', label: 'free insoles' },
-      { value: '8', label: 'schools' },
-      { value: '20', label: 'workshops I led' },
     ],
     recognition: ['Featured by Azerbaijan Medical University'],
     links: [{ label: 'sole-shift.com', href: 'https://sole-shift.com', kind: 'website' }, press.soleshiftAmu],
-    photo: 'soleshift-kids',
     detail: {
       builtTitle: 'What we built',
       built:
@@ -247,112 +272,10 @@ export const projects: Project[] = [
     },
   },
   {
-    slug: 'stem-van-thuis',
-    title: 'Stem van Thuis',
-    summary: 'Picture cards that help toddlers communicate before they learn Dutch.',
-    audience: 'Toddlers in Dutch daycares',
-    grades: 'Grades 10–11',
-    time: `6${nb}hr/wk · 18${nb}wk/yr`,
-    role: 'Founder · card designer',
-    facts: [
-      { value: '200+', label: 'toddlers reached' },
-      { value: '12', label: 'picture cards' },
-      { value: `18${nb}weeks`, label: 'pilot' },
-    ],
-    links: [],
-    photo: 'stem-van-thuis',
-    detail: {
-      problem: 'Toddlers in Dutch daycares need to show their basic needs before they have learned Dutch.',
-      built:
-        'A picture-card system for Dutch daycares. I designed 12 cards for food, sleep and pain. A toddler points to a card, and its QR code plays a parent’s recorded voice, so pictures come together with a familiar voice.',
-      measuredTitle: 'What I tested',
-      measured:
-        'Over an 18-week pilot, I tested and refined the cards with teachers and families until the youngest children could use them. The cards reached 200+ toddlers in Dutch daycares.',
-    },
-  },
-  {
-    slug: 'click',
-    title: 'CLICK: Children Rewrite the Instructions',
-    summary: 'Computing, English and AI-literacy lessons for Roma children.',
-    audience: 'Roma children in Romania',
-    grades: 'Grade 11',
-    time: `8${nb}hr/wk · 12${nb}wk/yr`,
-    role: 'Teacher · curriculum co-developer',
-    facts: [
-      { value: '270+', label: 'children taught online' },
-      { value: '75%', label: 'completed tasks without mentor hints' },
-      { value: '14', label: 'tutorials revised' },
-    ],
-    recognition: ['Initiated at the invitation of the Romanian Embassy in Azerbaijan'],
-    // TODO: click-alpha-give.vercel.app returned 404 on 2026-11-24, so the link is hidden.
-    links: [],
-    photo: 'click',
-    detail: {
-      builtTitle: 'What we built',
-      built:
-        'An online pilot, started at the invitation of the Romanian Embassy in Azerbaijan, that helps Roma children in Romania build digital independence through computing, English and AI-literacy tutorials. I taught 270+ children online.',
-      measured:
-        'As curriculum co-developer, I used the difficulties children ran into to revise 14 tutorials and make technical ideas easier to follow. By the end of the program, 75% completed tasks without mentor hints.',
-    },
-  },
-  {
-    slug: 'youth-collective',
-    title: 'The Youth Collective',
-    summary: 'Data-literacy and AI-ethics workshops for children.',
-    audience: 'Children in Azerbaijan',
-    grades: 'Grades 9–11',
-    time: `3${nb}hr/wk · 30${nb}wk/yr`,
-    role: 'Co-founder · Children’s Affairs Ambassador',
-    facts: [{ value: '400+', label: 'children so far' }],
-    links: [{ label: 'youth-collective.com', href: 'https://youth-collective.com', kind: 'website' }],
-    photo: 'youth-collective',
-    detail: {
-      builtTitle: 'What I run',
-      built:
-        'A youth-led initiative in Azerbaijan where children explore ecology, sports and health through workshops and community projects. I lead its work for children: in data-literacy and AI-ethics workshops, children collect observations, test popular claims with examples from ecology, sports and health, and learn to use AI tools critically, not blindly.',
-    },
-  },
-  {
-    slug: 'azerbaijan-childrens-foundation',
-    title: 'Azerbaijan Children’s Foundation',
-    summary: 'Digital work for a national children’s charity.',
-    audience: 'Children and their families',
-    grades: 'Grade 11',
-    time: `4${nb}hr/wk · 12${nb}wk/yr`,
-    role: 'Digital team member',
-    facts: [],
-    links: [{ label: 'azuf.az', href: 'https://azuf.az', kind: 'website' }],
-    photo: 'childrens-foundation',
-    detail: {
-      builtTitle: 'What I do',
-      built:
-        'The foundation is a national charity that supports children’s wellbeing through recreation for vulnerable families, digital-literacy and online-safety lessons for primary pupils, and chances for schoolchildren to develop creative talents. On its digital team I build registration forms, create announcements and prepare presentations for children’s events. I also guide participants and manage the technology on site, supporting families online and in person.',
-    },
-  },
-  {
-    slug: 'loomlock',
-    title: 'LoomLock',
-    summary: 'Website permissions that follow family roles in carpet businesses.',
-    audience: 'Artisan families',
-    grades: 'Grades 10–11',
-    time: `7${nb}hr/wk · 8${nb}wk/yr`,
-    role: 'Co-founder',
-    facts: [
-      { value: '100+', label: 'artisan families trained' },
-      { value: '3', label: 'regions' },
-    ],
-    links: [{ label: 'loom-lock.com', href: 'https://www.loom-lock.com', kind: 'website' }],
-    photo: 'loomlock',
-    detail: {
-      builtTitle: 'What we built',
-      built:
-        'LoomLock translates family roles into website permissions: teens manage online sales while adults control payments. I built these safeguards for family carpet businesses and led hands-on digital-security training for 100+ artisan families across 3 regions.',
-    },
-  },
-  {
     slug: 'rehand-loom',
     title: 'ReHand Loom',
-    summary: 'A sensor glove to study strain in carpet weavers.',
+    category: 'community',
+    summary: 'A sensor glove that reads finger and wrist movement and pressure to study carpet weavers’ strain.',
     audience: 'Carpet weavers',
     grades: 'Grades 10–11',
     time: `10${nb}hr/wk · 25${nb}wk/yr`,
@@ -364,7 +287,6 @@ export const projects: Project[] = [
     ],
     recognition: ['Showcased at the National Carpet Museum', 'Recognized by the Ministry of Culture'],
     links: [press.rehandAzertac],
-    photo: 'rehand-loom',
     detail: {
       builtTitle: 'What we built',
       built:
@@ -376,7 +298,8 @@ export const projects: Project[] = [
   {
     slug: 'sessiz-sifaris',
     title: 'Sessiz Sifaris',
-    summary: 'QR ordering for guests with speech or language barriers.',
+    category: 'community',
+    summary: 'QR ordering that lets guests with speech or language barriers order without speaking.',
     audience: 'Restaurant guests with speech or language barriers',
     grades: 'Grades 10–11',
     time: `5${nb}hr/wk · 10${nb}wk/yr`,
@@ -387,7 +310,6 @@ export const projects: Project[] = [
       { value: '20', label: 'supervisors trained' },
     ],
     links: [{ label: 'sessizsifaris.com', href: 'https://sessizsifaris.com', kind: 'website' }],
-    photo: 'sessiz-sifaris',
     detail: {
       builtTitle: 'What we built',
       built:
@@ -399,40 +321,23 @@ export const projects: Project[] = [
   {
     slug: 'athena-band',
     title: 'Athena Band',
-    summary: 'Software that turns a screen-free band’s readings into data athletes can review.',
+    category: 'community',
+    summary: 'Software and a dashboard that turn a screen-free band’s readings into data athletes can review.',
     audience: 'Athletes',
     grades: 'Grades 10–11',
     time: `5${nb}hr/wk · 16${nb}wk/yr`,
     role: 'Software developer · user trainer',
-    facts: [],
-    recognition: ['Recommended by the president of Sabah FC'],
+    facts: [
+      { value: 'Movement & heart rate', label: 'readings turned into data athletes can review' },
+      { value: 'Sabah FC', label: 'core functions tested with club personnel' },
+    ],
     links: [{ label: 'athenaband.com', href: 'https://athenaband.com', kind: 'website' }],
-    photo: 'athena-band',
     detail: {
       built:
         'Software and a dashboard that turn a screen-free band’s movement and heart-rate readings into data athletes can review.',
       measuredTitle: 'How we tested it',
       measured:
         'I trained users and tested the core functions with Sabah FC personnel, connecting development with field testing.',
-    },
-  },
-  {
-    slug: 'wolbacaspian',
-    title: 'WolbaCaspian',
-    summary: 'Solar sensor stations to guide mosquito-habitat control.',
-    grades: 'Grades 10–11',
-    time: `4${nb}hr/wk · 12${nb}wk/yr`,
-    role: 'Co-designer (team of five)',
-    facts: [],
-    links: [{ label: 'wolbacaspian.com', href: 'https://wolbacaspian.com', kind: 'website' }],
-    photo: 'wolbacaspian',
-    detail: {
-      builtTitle: 'What we built',
-      built:
-        'Solar sensor stations that guide mosquito-habitat control in Azerbaijan’s Caspian lowlands, linking environmental monitoring to prevention. I co-designed the stations.',
-      measuredTitle: 'How we measured',
-      measured:
-        'Our five-person team used Random Forest to calibrate the low-cost sensors against Ministry of Ecology and local weather-station data. I planned how to validate the model against a baseline.',
     },
   },
 ];
@@ -482,6 +387,5 @@ export const media: { outlet: string; text: string; href?: string }[] = [
   { outlet: 'AZERTAC', text: 'ReHand Loom smart glove', href: press.rehandAzertac.href },
   { outlet: 'Azerbaijan Medical University', text: 'SoleShift Kids', href: press.soleshiftAmu.href },
   { outlet: 'National Carpet Museum', text: 'ReHand Loom showcased' },
-  { outlet: 'Sabah FC', text: 'The club president recommended the Athena Band team' },
 ];
 

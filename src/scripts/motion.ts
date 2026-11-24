@@ -6,11 +6,15 @@
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { initKorczak } from './korczak';
+import { initProjects, layoutThread } from './projects';
 
 gsap.registerPlugin(ScrollTrigger);
 (window as unknown as { __motion?: boolean }).__motion = true;
 
 const root = document.documentElement;
+
+// The thread's geometry is layout, not motion: needed in every mode.
+layoutThread();
 const mm = gsap.matchMedia();
 
 mm.add('(prefers-reduced-motion: reduce)', () => {
@@ -70,6 +74,8 @@ mm.add('(prefers-reduced-motion: no-preference)', () => {
   // 0c. Korczak scene (pinned). Created here, before the reveals below,
   //     so ScrollTriggers are created in page order.
   const killKorczak = initKorczak();
+  // 0d. Projects: the thread draws with scroll; hover dots.
+  const killProjects = initProjects();
 
   // 1. Reveal: short rise + fade, staggered in the order things enter.
   const items = gsap.utils.toArray<HTMLElement>('[data-reveal]');
@@ -120,5 +126,6 @@ mm.add('(prefers-reduced-motion: no-preference)', () => {
   return () => {
     document.removeEventListener('focusin', onFocus);
     killKorczak();
+    killProjects();
   };
 });
